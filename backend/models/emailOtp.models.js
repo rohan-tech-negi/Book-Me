@@ -20,6 +20,20 @@ const emailOtpSchema = new mongoose.Schema(
         attempts:{
             type: Number,
             default: 0
+        },
+        expiresAt:{
+            type: Date,
+            required: true,
+            index: {expires : 0}
+        },
+        consumesAt:{
+            type: Date,
+            default: null
         }
-    }
+    },{timestamps: true}
 )
+
+const EmailOtp = mongoose.model('EmailOtp', emailOtpSchema)
+
+
+export default EmailOtp
