@@ -40,5 +40,13 @@ export const requestEmailOtp = async({email, puspose}) => {
 
 
 export const verifyEmailOtp = async({email , purpose, code, consume = false}) => {
-    const normalizedEmail
+    const normalizedEmail = normalizedEmail(email)
+    if(!normalizedEmail || !code){
+        return{verified: false, reason: 'Email and OTP are required'}
+    }
+
+    const record = await  EmailOtp.findOne({
+        email: normalizedEmail,
+        purpose
+    })
 }
