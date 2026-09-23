@@ -47,6 +47,26 @@ export const verifyEmailOtp = async({email , purpose, code, consume = false}) =>
 
     const record = await  EmailOtp.findOne({
         email: normalizedEmail,
-        purpose
-    })
+        purpose,
+        consumeAt: null,
+        expireAt: {$gt: new Date()}
+    }).sort({createdAt: -1})
+
+    if(!record){
+        return {verified: false, reason: "OTP expired or not found"}
+    }
+
+    if(record.attempts >= MAX_ATTEMPTS){
+        return {verified: false, reason: "Too many OTP attempts. Request a new code"}
+
+    }
+
+    const isMatch = await bcrypt.compare(String(code).trim(), record.codeHash)
+    if(!isMatch){
+        record.attempts += 1;
+        await record.save()
+        return{verified: false, reason: "Invalid OTP"}
+    }
+
+    if()
 }
