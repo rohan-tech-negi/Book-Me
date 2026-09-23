@@ -68,5 +68,9 @@ export const verifyEmailOtp = async({email , purpose, code, consume = false}) =>
         return{verified: false, reason: "Invalid OTP"}
     }
 
-    if()
+    if(consume){
+        record.consumeAt = new Date()
+        await record.save()
+    }
+    return{verified: true, email: normalizedEmail}
 }
