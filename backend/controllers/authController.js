@@ -114,3 +114,17 @@ export const requestRegistrationOTP = async(req,res)=>{
         })
     }
 }
+
+export const verifyRegistrationOtp = async(req,res)=>{
+    try {
+        const {email, emailOtp} = req.body;
+        const normalizedEmail = email?.toLowerCase().trim()
+
+
+        if(!normalizedEmail || !emailOtp){
+            return res.status()
+        }
+    } catch (error) {
+        
+    }
+}
