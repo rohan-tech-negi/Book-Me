@@ -107,7 +107,10 @@ export const requestRegistrationOTP = async(req,res)=>{
         }
 
         const result = await requestEmailOtp({email: normalizedEmail, purpose: 'registration '})
+        res.json({message: 'Verification code sent', result})
     } catch (error) {
-        
+        res.status(503).json({
+            message: error.message
+        })
     }
 }
