@@ -150,3 +150,26 @@ export const verifyRegistrationOtp = async(req,res)=>{
      res.status(500).json({message: "Server error", error: error.message})   
     }
 }
+
+
+export const loginUser = async(req,res)=>{
+    try {
+        const {email, password} = req.body
+        if(!email || !password){
+            return res.status(400).json({message: "Email and password are required"})
+        }
+
+
+        const normalizedEmail = email.toLowerCase().trim()
+
+        const user = await User.findOne({email: normalizedEmail})
+
+        if(!user){
+            return res.status(401).json({message: "Invalid credentials"})
+        }
+
+        const 
+    } catch (error) {
+        
+    }
+}
