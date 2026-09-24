@@ -48,6 +48,18 @@ export const registerUser = async(req,res)=>{
             code: emailOtp,
             consume: true
         })
+        if(!otpResult.verified){
+            return res.status(400).json({message: otpResult.reason || "Email verification is required"})
+        }
+
+        const baseSlug = slugify(businessName || name) || 'business'
+        let finalSlug = baseSlug;
+        let counter = 1;
+        while(await User.findOne({slug: finalSlug})){
+            finalSlug = `${baseSlug} - ${counter}`
+            counter += 1;
+        }
+
     } catch (error) {
         
     }
