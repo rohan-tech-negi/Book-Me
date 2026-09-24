@@ -87,4 +87,27 @@ export const registerUser = async(req,res)=>{
 
 
 
-export const 
+export const requestRegistrationOTP = async(req,res)=>{
+    try {
+        const {email} = req.body;
+        const normalizedEmail = email?.toLowerCase().trim()
+
+        if(!normalizedEmail){
+            return res.status(400).json({
+                message: "Email is required"
+
+            })
+        }
+        const existingUser = await User.findOne({email: normalizedEmail})
+        if(existingUser){
+            return res.status(400).json({
+                message: "Email  already exists"
+
+            })
+        }
+
+        const result = await requestEmailOtp({email: normalizedEmail, purpose: 'registration '})
+    } catch (error) {
+        
+    }
+}
