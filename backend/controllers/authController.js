@@ -122,9 +122,31 @@ export const verifyRegistrationOtp = async(req,res)=>{
 
 
         if(!normalizedEmail || !emailOtp){
-            return res.status()
+            return res.status(400).json({message: "Email and OTP are required"})
         }
+
+        const existingUser = await User.findOne({email: normalizedEmail})
+         if(existingUser){
+            return res.status(400).json({
+                message: "Email  already exists"
+
+            })
+        }
+
+        const otpResult = await verifyEmailOtp({
+            email: normalizedEmail,
+            purpose: 'registration',
+            code: emailOtp,
+            consume: false
+        })
+        if(!otpResult.verified){
+            return res.status(400).json({
+                message: otpResult.reason || 'Invalid OTP'
+            })
+        }
+
+        res.json({message: 'OTP verified'})
     } catch (error) {
-        
+     res.status(500).json({message: "Server error", error: error.message})   
     }
 }
