@@ -26,7 +26,7 @@ const emailOtpSchema = new mongoose.Schema(
             required: true,
             index: {expires : 0}
         },
-        consumesAt:{
+        consumedAt:{
             type: Date,
             default: null
         }
