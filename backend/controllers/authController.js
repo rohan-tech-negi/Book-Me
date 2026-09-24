@@ -185,3 +185,6 @@ export const loginUser = async(req,res)=>{
     }
 }
 
+export const getMe = async(req,res)=>{
+    
+}
