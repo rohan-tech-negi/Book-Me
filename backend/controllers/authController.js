@@ -28,5 +28,27 @@ const toUserResponse = (user) => ({
 
 
 export const registerUser = async(req,res)=>{
-    
+    try {
+        const {name, email, password, businessName, businessDescription, timezone, emailOtp} = req.body
+        if(!name || !email || !password){
+            return res.status(400).json({message: "name email and password are required"})
+        }
+
+        const normalizedEmail = email.toLowerCase().trim()
+
+        const existingUser = await User.findOne({email: normalizedEmail})
+
+        if(existingUser){
+            return res.status(400).json({message: "Email already exists"})
+        }
+
+        const otpResult = await verifyEmailOtp({
+            email: normalizedEmail,
+            purpose: "registration",
+            code: emailOtp,
+            consume: true
+        })
+    } catch (error) {
+        
+    }
 }
