@@ -71,7 +71,20 @@ export const registerUser = async(req,res)=>{
             timezone: timezone || 'Asia/Delhi'
         })
 
+        const token = createToken(user._id)
+        res.status(201).json({
+            message: "Registered Successfully",
+            user: toUserResponse(user),
+            token
+        })
+
     } catch (error) {
-        
+        res.status(500).json({
+            message: "Server error", error: error.message
+        })
     }
 }
+
+
+
+export const 
