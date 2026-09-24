@@ -24,3 +24,9 @@ const toUserResponse = (user) => ({
   payoutDetails: user.payoutDetails,
   stripeConfigured: Boolean(process.env.STRIPE_SECRET_KEY),
 });
+
+
+
+export const registerUser = async(req,res)=>{
+    
+}
