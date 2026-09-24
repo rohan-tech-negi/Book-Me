@@ -60,6 +60,17 @@ export const registerUser = async(req,res)=>{
             counter += 1;
         }
 
+        const hasdPassword = await bcrypt.hash(password, 10)
+
+        const user = await User.create({
+            name,
+            email: normalizedEmail,
+            password: hashPassword,
+            slug: finalSlug,
+            businessName: businessName || '',
+            timezone: timezone || 'Asia/Delhi'
+        })
+
     } catch (error) {
         
     }
