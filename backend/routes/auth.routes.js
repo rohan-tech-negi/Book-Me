@@ -4,7 +4,7 @@ import { getMe, loginUser, registerUser, requestRegistrationOTP, updateProfile, 
 
 import auth from "../middleware/auth.js"
 
-const router = express.Roiter()
+const router = express.Router()
 
 router.post('/register', registerUser)
 router.post('/register/request-otp', requestRegistrationOTP)

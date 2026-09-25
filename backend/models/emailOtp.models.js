@@ -11,6 +11,7 @@ const emailOtpSchema = new mongoose.Schema(
         },
         purpose:{
             type: String,
+            trim: true,
             enum: ['registration', 'booking']
         },
         codeHash:{

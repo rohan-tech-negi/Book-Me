@@ -56,16 +56,16 @@ export const registerUser = async(req,res)=>{
         let finalSlug = baseSlug;
         let counter = 1;
         while(await User.findOne({slug: finalSlug})){
-            finalSlug = `${baseSlug} - ${counter}`
+            finalSlug = `${baseSlug}-${counter}`
             counter += 1;
         }
 
-        const hasdPassword = await bcrypt.hash(password, 10)
+        const hashedPassword = await bcrypt.hash(password, 10)
 
         const user = await User.create({
             name,
             email: normalizedEmail,
-            password: hashPassword,
+            password: hashedPassword,
             slug: finalSlug,
             businessName: businessName || '',
             timezone: timezone || 'Asia/Delhi'
@@ -106,7 +106,7 @@ export const requestRegistrationOTP = async(req,res)=>{
             })
         }
 
-        const result = await requestEmailOtp({email: normalizedEmail, purpose: 'registration '})
+        const result = await requestEmailOtp({email: normalizedEmail, purpose: 'registration'})
         res.json({message: 'Verification code sent', result})
     } catch (error) {
         res.status(503).json({
@@ -193,9 +193,9 @@ export const getMe = async(req,res)=>{
             return res.status(404).json({message: "User not found"})
         }
 
-        res.json({user: toUserResponse})
+        res.json({user: toUserResponse(user)})
     } catch (error) {
-        
+        res.status(500).json({message: 'Server error', error: error.message})
     }
 }
 

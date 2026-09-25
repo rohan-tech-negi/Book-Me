@@ -11,12 +11,13 @@ const createCode = () => crypto.randomInt(100000, 1000000).toString()
 
 export const requestEmailOtp = async ({ email, purpose }) => {
     const normalizedEmail = normalizeEmail(email)
+    const normalizedPurpose = purpose?.trim()
 
     if (!normalizedEmail) {
         throw new Error('Email is required')
     }
 
-    if (!purpose) {
+    if (!normalizedPurpose) {
         throw new Error('Purpose is required')
     }
 
@@ -24,15 +25,15 @@ export const requestEmailOtp = async ({ email, purpose }) => {
     const codeHash = await bcrypt.hash(code, 10)
     const expiresAt = new Date(Date.now() + OTP_TTL_MINUTES * 60 * 1000)
 
-    await EmailOtp.deleteMany({ email: normalizedEmail, purpose, consumedAt: null })
+    await EmailOtp.deleteMany({ email: normalizedEmail, purpose: normalizedPurpose, consumedAt: null })
     await EmailOtp.create({
         email: normalizedEmail,
-        purpose,
+        purpose: normalizedPurpose,
         codeHash,
         expiresAt
     })
 
-    await sendOtpNotification({ email: normalizedEmail, code, purpose })
+    await sendOtpNotification({ email: normalizedEmail, code, purpose: normalizedPurpose })
 
     return {
         sent: true,
@@ -43,13 +44,14 @@ export const requestEmailOtp = async ({ email, purpose }) => {
 
 export const verifyEmailOtp = async ({ email, purpose, code, consume = false }) => {
     const normalizedEmail = normalizeEmail(email)
+    const normalizedPurpose = purpose?.trim()
     if (!normalizedEmail || !code) {
         return { verified: false, reason: 'Email and OTP are required' }
     }
 
     const record = await EmailOtp.findOne({
         email: normalizedEmail,
-        purpose,
+        purpose: normalizedPurpose,
         consumedAt: null,
         expiresAt: { $gt: new Date() }
     }).sort({ createdAt: -1 })
