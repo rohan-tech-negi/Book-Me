@@ -1,4 +1,4 @@
-import  Jwt  from "jsonwebtoken";
+import  jwt  from "jsonwebtoken";
 
 const auth = (req,res,next)=>{
     const authHeader  = req.header.authorization;
@@ -10,7 +10,7 @@ const auth = (req,res,next)=>{
     const token = authHeader.split(" ")(1)
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        const decode = jwt.verify(token, process.env.JWT_SECRET)
         req.user  = {id: decode.userId}
         next()
     } catch (error) {
