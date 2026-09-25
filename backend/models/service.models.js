@@ -1,0 +1,41 @@
+import mongoose from "mongoose";
+
+const serviceSchema = mongoose.Schema(
+    {
+        userId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
+            index: true
+        },
+        name:{
+            type: String,
+            required: true,
+            trim: true
+        }, 
+        duration:{
+            type:Number,
+            required: true,
+            min: 5,
+        },
+        price:{
+            type: Number ,
+            default: 0,
+            min: 0
+        },
+        description:{
+            type: String,
+            default: '',
+            trim: true
+        },
+        item:{
+            type: String,
+            default: 'C1.png'
+        },
+        isActive:{
+            type: Boolean,
+            default: false,
+            index: true
+        }
+    },{timestamps: true}
+)
