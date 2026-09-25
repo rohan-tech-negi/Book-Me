@@ -58,3 +58,25 @@ export const updateService = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
+
+export const deleteService = async(req,res)=>{
+    try {
+        const service = await Service.findOneAndUpdate({
+            _id: req.params.id, 
+            userid: req.user.id,
+            isDeleted:{$ne: true}
+        } , {
+            isDeleted: true, isActive: false
+        }, {
+            new: true
+        }
+    )
+    if(!service){
+        return res.status(404).json({message: "Service not found"})
+    }
+    res.json({message: "Service deleted", service})
+    } catch (error) {
+        res.status(500).json({message: "Server error",error: error.message})
+    }
+}
