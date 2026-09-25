@@ -8,3 +8,27 @@ export const listServices =  async(req, res)=>{
         res.status(500).json({message: "Server error", error: error.message})
     }
 }
+
+export const createServices = async(req,res)=>{
+    try {
+        const {name, duration, price, description, icon} = req.body;
+
+        if(!name || !duration){
+            return res.status(400).json({message: "Service name and duration are required"})
+        }
+
+        const service = await Service.create({
+            userId: req.user.id,
+            name,
+            duration,
+            price: price || 0,
+            description: description | '',
+            icon: icon || 'C1.png'
+        })
+
+        res.status(201).json({message: "Service created ", service})
+    } catch (error) {
+        res.status(500).json({message: "Servicer error", error: error.message})
+    }
+}
+
