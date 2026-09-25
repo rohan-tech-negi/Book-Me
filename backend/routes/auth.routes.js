@@ -7,3 +7,10 @@ import auth from "../middleware/auth.js"
 const router = express.Roiter()
 
 router.post('/register', registerUser)
+router.post('/register/request-otp', requestRegistrationOTP)
+router.post('/register/verify-otp', verifyRegistrationOtp)
+router.post('/login', loginUser)
+router.post('/me', auth, getMe)
+router.post('/profile', auth, updateProfile)
+
+export default router
