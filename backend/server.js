@@ -4,6 +4,7 @@ import 'dotenv/config'
 import http from "http"
 import { connectDB } from "./config/db.js";
 import authRoutes from './routes/auth.routes.js'
+import serviceRoutes from "./routes/service.routes.js"
 
 
 const PORT = process.env.PORT || 5002;
@@ -20,6 +21,7 @@ app.get("/",(req,res)=>{
 })
 
 app.use("/api/auth", authRoutes)
+app.use('/api/services', serviceRoutes)
 
 const server = http.createServer(app)
 
