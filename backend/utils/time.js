@@ -4,5 +4,18 @@ export const timeToMinutes = (time)=>{
 }
 
 export const minutesToTime = (totalMinutes) =>{
-    const hours
+    const hours = Math.floow(totalMinutes / 60)
+    const minutes = totalMinutes % 60;
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2,'0')}`
+
+
+}
+
+
+export const isValidTimeRande = (startTime, endTime) => {
+    return timeToMinutes(startTime) < timeToMinutes(endTime)
+}
+
+export const getDayOfWeek = (date) =>{
+    return new Date(`${date}00:00:00`).getDay()
 }
