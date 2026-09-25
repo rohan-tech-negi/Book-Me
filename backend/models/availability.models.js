@@ -13,4 +13,28 @@ const slotSchema = new mongoose.Schema(
     },{_id: false}
 )
 
-const availability = 
+const availabilitySchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+        index: true
+    },
+    dayOfWeek:{
+        type: Number,
+        required: true,
+        min: 0,
+        max: 6
+    },
+    slot:{
+        type: [slotSchema],
+        default: []
+    }
+},{timestamps: true})
+
+
+availability.index({userId: 1, dayOfWeek: 1}, {unique: true})
+
+const Availability = mongoose.model('Availability', availabilitySchema)
+
+export default Availability
