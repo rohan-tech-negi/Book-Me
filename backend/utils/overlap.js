@@ -1,1 +1,1 @@
-import 
+import {timeToMinutes}  from "./time.js"

@@ -5,7 +5,7 @@ import { createServices, updateService, deleteService, listServices } from "../c
 
 import auth from '../middleware/auth.js'
 
-const router =express.Router
+const router = express.Router
 
 router.get("/",auth, listServices)
 router.get("/",auth, createServices)
