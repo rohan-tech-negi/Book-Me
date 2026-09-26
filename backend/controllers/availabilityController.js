@@ -21,9 +21,17 @@ export const saveAvailability = async(req,res)=>{
         }
 
         const cleanedSlots = (slots | []).filter((slot)=>{
-            slot.startTime && slot.endTime && isValidTimeRange
+            slot.startTime && slot.endTime && isValidTimeRange(slot.startTime, slot.endTime)
         })
+
+        const availability = await Availability.findOneAndUpdate(
+            {userId: req.user.id, dayOfWeek},
+            {slots: cleanedSlots},
+            {new: true, upsert: true}
+        )
+
+        res.json({message: 'availabiity saved',availability})
     } catch (error) {
-        
+        res.status(500). json({message: "server error"})
     }
 }
