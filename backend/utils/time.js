@@ -12,7 +12,7 @@ export const minutesToTime = (totalMinutes) =>{
 }
 
 
-export const isValidTimeRande = (startTime, endTime) => {
+export const isValidTimeRange = (startTime, endTime) => {
     return timeToMinutes(startTime) < timeToMinutes(endTime)
 }
 

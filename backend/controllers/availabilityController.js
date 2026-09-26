@@ -1,5 +1,5 @@
 import Availability from "../models/availability.models";
-import { isValidTimeRande } from "../utils/time";
+import { isValidTimeRange } from "../utils/time";
 
 export const listAvailability = async(req,res)=>{
     try {
@@ -9,5 +9,21 @@ export const listAvailability = async(req,res)=>{
         res.json({availability})
     } catch (error) {
         res.status(500).json({message: "servicer error", error: error.message})
+    }
+}
+
+export const saveAvailability = async(req,res)=>{
+    try {
+        const {dayOfWeek, slots} = req.body
+
+        if(dayOfWeek === undefined || dayOfWeek < 0 || dayOfWeek > 6){
+            return res.status(400).json({message: "valid day of week is required"})
+        }
+
+        const cleanedSlots = (slots | []).filter((slot)=>{
+            slot.startTime && slot.endTime && isValidTimeRange
+        })
+    } catch (error) {
+        
     }
 }
