@@ -33,8 +33,19 @@ export const generateSlots = async({userId, service, date}) =>{
         const end = timeToMinutes(window.endTime)
 
         while(cursor + service.duration <= end){
-            const startTIme = minutesToTime(cursor)
+            const startTime = minutesToTime(cursor)
             const endTime = minutesToTime(cursor + service.duration)
+            const hasConflict = bookings.some((booking) => {
+                timeOverlap(startTime, endTime, booking,startTime, booking.endTime)
+            })
+
+
+            if(!hasConflict){
+                slot.push({startTime, endTime})
+            }
+            cursor += service.duration
         }
     })
+
+    return slots
 }
