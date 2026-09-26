@@ -1,6 +1,6 @@
 import express from "express"
 
-import { createServices, updateService, deleteService, listServices } from "../controllers/serviceCOntroller"
+import { createServices, updateService, deleteService, listServices } from "../controllers/serviceController.js"
 
 
 import auth from '../middleware/auth.js'
