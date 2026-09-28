@@ -3,12 +3,12 @@ import { isValidTimeRange } from "../utils/time.js";
 
 export const listAvailability = async(req,res)=>{
     try {
-        const availability = (await Availability.find({
+        const availability = await Availability.find({
             userId: req.user.id
-        })).toSorted({dayOfWeek: 1})
+        }).sort({dayOfWeek: 1})
         res.json({availability})
     } catch (error) {
-        res.status(500).json({message: "servicer error", error: error.message})
+        res.status(500).json({message: "Server error", error: error.message})
     }
 }
 
@@ -20,8 +20,8 @@ export const saveAvailability = async(req,res)=>{
             return res.status(400).json({message: "valid day of week is required"})
         }
 
-        const cleanedSlots = (slots | []).filter((slot)=>{
-            slot.startTime && slot.endTime && isValidTimeRange(slot.startTime, slot.endTime)
+        const cleanedSlots = (slots || []).filter((slot)=>{
+            return slot.startTime && slot.endTime && isValidTimeRange(slot.startTime, slot.endTime)
         })
 
         const availability = await Availability.findOneAndUpdate(
@@ -30,8 +30,8 @@ export const saveAvailability = async(req,res)=>{
             {new: true, upsert: true}
         )
 
-        res.json({message: 'availabiity saved',availability})
+        res.json({message: 'Availability saved', availability})
     } catch (error) {
-        res.status(500). json({message: "server error"})
+        res.status(500).json({message: "Server error", error: error.message})
     }
 }

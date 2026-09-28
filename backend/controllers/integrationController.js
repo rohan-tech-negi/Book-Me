@@ -10,10 +10,10 @@ export const getGoogleConnectUrl = async (req, res) => {
   ) {
     return res
       .status(503)
-      .json({ message: "Google Calender is not configure" });
+      .json({ message: "Google Calendar is not configured" });
   }
 
-  res.jso({ url: getGoogleAuthUrl(req.user.id) });
+  res.json({ url: getGoogleAuthUrl(req.user.id) });
 };
 
 
@@ -22,23 +22,23 @@ export const handleGoogleCallback = async(req,res)=>{
         const {code, state} = req.query;
 
         if(!code || !state){
-            return res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/profile?calender=failed`)
+            return res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/profile?calendar=failed`)
         }
 
         const token = await getGoogleTokens(code)
 
-        if(!token.referesh_token){
-            return es.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/profile?calender=missing-refresh-token`)
+        if(!token.refresh_token){
+            return res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/profile?calendar=missing-refresh-token`)
         }
 
         await User.findByIdAndUpdate(state, {
-            googleRefreshToken: token.referesh_token,
-            googleCalenderConnected: true,
-            googleCalenderId: `primary`
+            googleRefreshToken: token.refresh_token,
+            googleCalendarConnected: true,
+            googleCalendarId: `primary`
         })
 
-        res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/profile?calender=connected`)
+        res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/profile?calendar=connected`)
     } catch (error) {
-         res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/profile?calender=failed`)
+         res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/profile?calendar=failed`)
     }
 }

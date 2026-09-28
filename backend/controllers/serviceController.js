@@ -2,7 +2,7 @@ import Service from "../models/service.models.js";
 
 export const listServices =  async(req, res)=>{
     try {
-        const services = await Service.find({userId: req.user.Id, isDeleted: {$ne: true}}).toSorted({createdAt: -1})
+        const services = await Service.find({userId: req.user.id, isDeleted: {$ne: true}}).sort({createdAt: -1})
         res.json({services})
     } catch (error) {
         res.status(500).json({message: "Server error", error: error.message})
@@ -22,13 +22,13 @@ export const createServices = async(req,res)=>{
             name,
             duration,
             price: price || 0,
-            description: description | '',
+            description: description || '',
             icon: icon || 'C1.png'
         })
 
         res.status(201).json({message: "Service created ", service})
     } catch (error) {
-        res.status(500).json({message: "Servicer error", error: error.message})
+        res.status(500).json({message: "Server error", error: error.message})
     }
 }
 
@@ -64,7 +64,7 @@ export const deleteService = async(req,res)=>{
     try {
         const service = await Service.findOneAndUpdate({
             _id: req.params.id, 
-            userid: req.user.id,
+            userId: req.user.id,
             isDeleted:{$ne: true}
         } , {
             isDeleted: true, isActive: false

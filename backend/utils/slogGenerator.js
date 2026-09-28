@@ -9,7 +9,7 @@ export const generateSlots = async({userId, service, date}) =>{
     const dayOfWeek = getDayOfWeek(date)
     const availability = await Availability.findOne({userId, dayOfWeek})
 
-    if(!availability || availability.slot.length === 0){
+    if(!availability || availability.slots.length === 0){
         return []
     }
 
@@ -19,7 +19,7 @@ export const generateSlots = async({userId, service, date}) =>{
         $or:[
             {status: 'confirmed'},
             {
-                status: "pending payment",
+                status: "pending_payment",
                 createdAt: {$gte : new Date(Date.now() - 30 * 60 * 1000)},
 
             }
@@ -36,12 +36,12 @@ export const generateSlots = async({userId, service, date}) =>{
             const startTime = minutesToTime(cursor)
             const endTime = minutesToTime(cursor + service.duration)
             const hasConflict = bookings.some((booking) => {
-                timeOverlap(startTime, endTime, booking,startTime, booking.endTime)
+                return timeOverlap(startTime, endTime, booking.startTime, booking.endTime)
             })
 
 
             if(!hasConflict){
-                slot.push({startTime, endTime})
+                slots.push({startTime, endTime})
             }
             cursor += service.duration
         }
