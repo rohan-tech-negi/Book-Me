@@ -31,6 +31,18 @@ const walletTransactionSchema = new mongoose.Schema({
         default: 'inr'
     },
     status: {
-        type: String
+        type: String,
+        default: '',
+        trim: true
     }
-})
+},{timestamps: true})
+
+walletTransactionSchema.index(
+    {bookingId: 1, type: 1},
+    {unique: true, partialFilterExpression: {bookingId: {$exists: true}}}
+)
+
+
+const WalletTransition = mongoose.model('walletTransition', walletTransactionSchema)
+
+export default WalletTransition
