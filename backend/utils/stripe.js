@@ -10,5 +10,5 @@ export const getStripe = () =>{
 
 
 export const toStripeAmount = (price) =>{
-    
+    return Math.round(Number(price || 0) * 100)
 }
