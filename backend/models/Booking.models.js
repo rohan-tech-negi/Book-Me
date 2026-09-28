@@ -4,13 +4,13 @@ const bookingSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
       required: true,
       index: true,
     },
     serviceId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Service',
+      ref: "Service",
       required: true,
     },
     customerName: {
@@ -26,7 +26,7 @@ const bookingSchema = new mongoose.Schema(
     },
     customerAvatar: {
       type: String,
-      default: 'A1.png',
+      default: "A1.png",
     },
     date: {
       type: String,
@@ -43,17 +43,23 @@ const bookingSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['pending', 'pending_payment', 'confirmed', 'cancelled', 'payment_failed'],
-      default: 'confirmed',
+      enum: [
+        "pending",
+        "pending_payment",
+        "confirmed",
+        "cancelled",
+        "payment_failed",
+      ],
+      default: "confirmed",
     },
     paymentStatus: {
       type: String,
-      enum: ['not_required', 'pending', 'paid', 'failed'],
-      default: 'not_required',
+      enum: ["not_required", "pending", "paid", "failed"],
+      default: "not_required",
     },
     stripeSessionId: {
       type: String,
-      default: '',
+      default: "",
       index: true,
     },
     amount: {
@@ -70,24 +76,24 @@ const bookingSchema = new mongoose.Schema(
     },
     payoutStatus: {
       type: String,
-      enum: ['not_required', 'pending', 'available', 'withdrawn'],
-      default: 'not_required',
+      enum: ["not_required", "pending", "available", "withdrawn"],
+      default: "not_required",
     },
     currency: {
       type: String,
-      default: 'inr',
+      default: "inr",
     },
     googleEventId: {
       type: String,
-      default: '',
+      default: "",
     },
     customerCalendarUrl: {
       type: String,
-      default: '',
+      default: "",
     },
     notes: {
       type: String,
-      default: '',
+      default: "",
       trim: true,
     },
     reminderSent: {
@@ -103,11 +109,9 @@ const bookingSchema = new mongoose.Schema(
       default: 0,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
+const Booking = mongoose.model("Booking", bookingSchema);
 
-const Booking = mongoose.model('Booking', bookingSchema)
-
-
-export default Booking
+export default Booking;
