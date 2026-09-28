@@ -28,11 +28,16 @@ const serviceSchema = mongoose.Schema(
             default: '',
             trim: true
         },
-        item:{
+        icon:{
             type: String,
             default: 'C1.png'
         },
         isActive:{
+            type: Boolean,
+            default: true,
+            index: true
+        },
+        isDeleted:{
             type: Boolean,
             default: false,
             index: true

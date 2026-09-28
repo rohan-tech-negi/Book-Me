@@ -1,5 +1,5 @@
 import { google } from "googleapis";
-import { buildCustomerCalenderUrl } from "./calenderLink.js";
+import { buildCustomerCalendarUrl } from "./calenderLink.js";
 
 const getOAuthClient = () => {
   return new google.auth.OAuth2(
@@ -15,7 +15,7 @@ export const getGoogleAuthUrl = (userId) => {
   return oauth2Client.generateAuthUrl({
     access_type: "offline",
     prompt: "consent",
-    scope: ["https://www.googleapis.com/auth/calender.events"],
+    scope: ["https://www.googleapis.com/auth/calendar.events"],
     state: String(userId),
   });
 };

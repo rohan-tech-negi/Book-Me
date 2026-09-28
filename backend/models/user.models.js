@@ -52,11 +52,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ""
     },
-    googleCalenderConnected:{
-        type: String,
+    googleCalendarConnected: {
+        type: Boolean,
         default: false
     },
-    googleCalenderId: {
+    googleCalendarId: {
         type: String,
         default: "primary"
     },

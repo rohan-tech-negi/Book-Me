@@ -12,14 +12,14 @@ const walletTransactionSchema = new mongoose.Schema({
         ref: 'Booking', 
         index: true
     },
-     withdrawnId: {
+    withdrawalId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Withdrawl', 
+        ref: 'Withdrawal', 
         index: true
     },
     type: {
         type: String,
-        enum: ['booking_payout', 'withdrawl_hold', 'withdrawl_reversal'],
+        enum: ['booking_payout', 'withdrawal_hold', 'withdrawal_reversal', 'withdrawl_hold', 'withdrawl_reversal'],
         required: true
     },
     amount: {
@@ -43,6 +43,6 @@ walletTransactionSchema.index(
 )
 
 
-const WalletTransition = mongoose.model('walletTransition', walletTransactionSchema)
+const WalletTransaction = mongoose.model('WalletTransaction', walletTransactionSchema)
 
-export default WalletTransition
+export default WalletTransaction

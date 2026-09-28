@@ -5,7 +5,7 @@ export const getStripe = () =>{
         return null
     }
 
-    return new Stripe(proces.env.STRIPE_SECRET_KEY)
+    return new Stripe(process.env.STRIPE_SECRET_KEY)
 }
 
 

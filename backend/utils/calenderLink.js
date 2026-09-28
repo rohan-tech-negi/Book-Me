@@ -1,8 +1,8 @@
-const toGoogleDateTime = (date,time)=>{
-    return `${date.replaceAll('-', '')}T${time.replace(':')}00`
+const toGoogleDateTime = (date, time) => {
+    return `${date.replaceAll('-', '')}T${time.replaceAll(':', '')}00`
 }
 
-export const buildCustomerCalenderUrl = ({business, service, booking})=>{
+export const buildCustomerCalendarUrl = ({ business, service, booking }) => {
     const params = new URLSearchParams({
         action: 'TEMPLATE',
         text: `${service.name} with ${business.businessName || business.name}`,
@@ -10,5 +10,7 @@ export const buildCustomerCalenderUrl = ({business, service, booking})=>{
         details: booking.notes || `Booking with ${business.businessName || business.name}`
     })
 
-    return `hhtps://calender.google.com/calender/render?${params.toString()}`
+    return `https://calendar.google.com/calendar/render?${params.toString()}`
 }
+
+export const buildCustomerCalenderUrl = buildCustomerCalendarUrl;

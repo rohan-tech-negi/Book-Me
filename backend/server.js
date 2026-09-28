@@ -28,8 +28,8 @@ app.use("/api/availibility", availibilityRoutes)
 app.use('/api/integrations', integrationRoutes)
 const server = http.createServer(app)
 
-server.on('error', (error)=>{
-    if(error.code === "EAASSRINUSE") {
+server.on('error', (error) => {
+    if (error.code === "EADDRINUSE") {
         console.log(`Port ${PORT} is already in use`)
         process.exit(1)
     }
