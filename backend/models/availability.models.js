@@ -26,14 +26,13 @@ const availabilitySchema = new mongoose.Schema({
         min: 0,
         max: 6
     },
-    slot:{
+    slots: {
         type: [slotSchema],
         default: []
     }
-},{timestamps: true})
+}, { timestamps: true })
 
-
-availability.index({userId: 1, dayOfWeek: 1}, {unique: true})
+availabilitySchema.index({ userId: 1, dayOfWeek: 1 }, { unique: true })
 
 const Availability = mongoose.model('Availability', availabilitySchema)
 
