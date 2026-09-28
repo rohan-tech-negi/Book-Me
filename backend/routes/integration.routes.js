@@ -1,6 +1,6 @@
 import express from "express"
 
-import { getGoogleConnectUrl, handleGoogleCallback } from "../controllers/integrationController"
+import { getGoogleConnectUrl, handleGoogleCallback } from "../controllers/integrationController.js"
 import auth from "../middleware/auth.js"
 
 const router = express.Router()
