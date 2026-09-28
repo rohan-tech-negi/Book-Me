@@ -5,11 +5,11 @@ import { createServices, updateService, deleteService, listServices } from "../c
 
 import auth from '../middleware/auth.js'
 
-const router = express.Router
+const router = express.Router()
 
-router.get("/",auth, listServices)
-router.get("/",auth, createServices)
-router.get("/:id",auth, updateService)
-router.get("/:id",auth, deleteService)
+router.get("/", auth, listServices)
+router.post("/", auth, createServices)
+router.put("/:id", auth, updateService)
+router.delete("/:id", auth, deleteService)
 
 export default router
