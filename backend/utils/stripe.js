@@ -1,0 +1,14 @@
+import Stripe from "stripe"
+
+export const getStripe = () =>{
+    if(!process.env.STRIPE_SECRET_KEY){
+        return null
+    }
+
+    return new Stripe(proces.env.STRIPE_SECRET_KEY)
+}
+
+
+export const toStripeAmount = (price) =>{
+    
+}
