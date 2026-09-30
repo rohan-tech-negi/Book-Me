@@ -1,5 +1,5 @@
 import express from "express"
-import { getPaymentOverview, requestWithdrawal, updatePayoutDetails } from "../controllers/bookingController.js"
+import { getPaymentOverview, requestWithdrawal, updatePayoutDetails } from "../controllers/paymentController.js"
 import auth from "../middleware/auth.js"
 
 const router = express.router()
