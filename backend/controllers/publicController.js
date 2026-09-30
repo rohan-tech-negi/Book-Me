@@ -12,3 +12,45 @@ import { timeOverlap } from "../utils/overlap.js"
 import { createBookingCalendarEvent } from "../utils/googleCalender.js"
 
 
+const getBusinessBySlug = async(slug) =>{
+    return User.findOne({slug}).select('-password')
+}
+
+const toPublicBusiness = (business) => ({
+    id: business._id,
+    name: business.name,
+    slug: business.slug,
+    businessName: business.businessName,
+    businessDescription: business.businessDescription,
+    brandTheme: business.brandTheme,
+    brandAccount: business.brandAccount,
+    timezone: business.timezone,
+    googleCalenderConnected: business.googleCalenderConnected
+})
+
+const holdWindowStart = () =>{
+    Date(Date.now() - 30 * 60 * 1000)
+}
+
+const findActiveSlotBooking = ({userId, date}) =>{
+    return Booking.find({
+        userId,
+        date,
+         $or: [
+            {status: 'confirmed'},
+            {
+                status: 'pending_payment',
+                createdAt: {$gte: holdWindowStart}
+            }
+         ]
+    })
+}
+
+
+export const getPublicBusiness = async(req,res)=>{
+    try {
+        
+    } catch (error) {
+        
+    }
+}
