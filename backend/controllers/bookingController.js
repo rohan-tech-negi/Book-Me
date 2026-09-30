@@ -1,130 +1,187 @@
-import mongoose from 'mongoose';
+import Booking from '../models/Booking.js';
+import Service from '../models/Service.js';
 import User from '../models/User.js';
-import WalletTransaction from '../models/WalletTransaction.js';
-import Withdrawal from '../models/Withdrawal.js';
-import { getWalletSummary } from '../utils/wallet.js';
+import { buildCustomerCalendarUrl } from '../utils/calendarLink.js';
+import { cancelBookingCalendarEvent, updateBookingCalendarEvent } from '../utils/googleCalendar.js';
+import { sendBookingNotification } from '../utils/bookingNotifications.js';
+import { timesOverlap } from '../utils/overlap.js';
 
 /**
- * Casts a string to a Mongoose ObjectId type.
- */
-const toObjectId = (id) => new mongoose.Types.ObjectId(String(id));
-
-/**
- * Masks an account number by returning only the last 4 digits.
- */
-const maskAccountNumber = (accountNumber = '') => {
-  const digits = String(accountNumber).replace(/\D/g, '');
-  return digits.slice(-4);
-};
-
-/**
- * Retrieves an overview of the user's payments including payout details,
- * total wallet balance summary, and recent transactions/withdrawals.
+ * Retrieves a list of bookings for the authenticated user based on query parameters.
+ * Filters can include booking status and date.
+ * Populates service details and appends a customer Google Calendar URL if available.
  * 
- * @param {Object} req - Express request object.
+ * @param {Object} req - Express request object containing user ID and query parameters.
  * @param {Object} res - Express response object.
  */
-export const getPaymentOverview = async (req, res) => {
+export const listBookings = async (req, res) => {
   try {
-    const userId = toObjectId(req.user.id);
-    const [user, summary, transactions, withdrawals] = await Promise.all([
-      User.findById(userId).select('payoutDetails'),
-      getWalletSummary(userId),
-      WalletTransaction.find({ userId }).sort({ createdAt: -1 }).limit(15),
-      Withdrawal.find({ userId }).sort({ createdAt: -1 }).limit(10),
+    const query = { userId: req.user.id };
+
+    if (req.query.status) {
+      if (req.query.status === 'rescheduled') {
+        query.isRescheduled = true;
+      } else {
+        query.status = req.query.status;
+      }
+    }
+    if (!req.query.status || req.query.status === 'rescheduled') {
+      query.status = { $nin: ['pending_payment', 'payment_failed'] };
+    }
+    if (req.query.date) query.date = req.query.date;
+
+    const [bookings, business] = await Promise.all([
+      Booking.find(query)
+        .populate('serviceId', 'name duration price')
+        .sort({ createdAt: -1 })
+        .lean(),
+      User.findById(req.user.id).select('name businessName').lean(),
     ]);
 
-    res.json({
-      payoutDetails: user?.payoutDetails || {},
-      wallet: summary,
-      transactions,
-      withdrawals,
+    const bookingsWithCalendarUrls = bookings.map((booking) => {
+      if (booking.customerCalendarUrl || !business || !booking.serviceId) {
+        return booking;
+      }
+
+      return {
+        ...booking,
+        customerCalendarUrl: buildCustomerCalendarUrl({
+          business,
+          service: booking.serviceId,
+          booking,
+        }),
+      };
     });
+
+    res.json({ bookings: bookingsWithCalendarUrls });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
 /**
- * Updates the user's payout (bank/UPI) details.
- * Determines if the payout profile is complete based on provided information.
+ * Updates the status of a specific booking (e.g., confirmed, cancelled).
+ * Handles sending email notifications to the customer about the status change.
+ * If the booking is cancelled, it also removes the event from Google Calendar.
  * 
- * @param {Object} req - Express request object containing payout details in body.
+ * @param {Object} req - Express request object containing booking ID in params and new status in body.
  * @param {Object} res - Express response object.
  */
-export const updatePayoutDetails = async (req, res) => {
+export const updateBookingStatus = async (req, res) => {
   try {
-    const { accountHolderName, bankName, accountNumber, ifsc, upiId } = req.body;
+    const { status } = req.body;
+    const allowed = ['pending', 'pending_payment', 'confirmed', 'cancelled', 'payment_failed'];
 
-    if (!accountHolderName || (!accountNumber && !upiId)) {
-      return res.status(400).json({ message: 'Account holder and a bank account or UPI ID are required' });
+    if (!allowed.includes(status)) {
+      return res.status(400).json({ message: 'Invalid booking status' });
     }
 
-    const payoutDetails = {
-      accountHolderName,
-      bankName: bankName || '',
-      accountLast4: accountNumber ? maskAccountNumber(accountNumber) : '',
-      ifsc: ifsc || '',
-      upiId: upiId || '',
-      isComplete: Boolean(accountHolderName && (accountNumber || upiId)),
-      updatedAt: new Date(),
-    };
-
-    const user = await User.findByIdAndUpdate(
-      req.user.id,
-      { payoutDetails },
+    const booking = await Booking.findOneAndUpdate(
+      { _id: req.params.id, userId: req.user.id },
+      { status },
       { new: true }
-    ).select('payoutDetails');
+    ).populate('serviceId', 'name duration price');
 
-    res.json({ message: 'Payout details saved', payoutDetails: user.payoutDetails });
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    const business = await User.findById(req.user.id);
+    if (business && status === 'cancelled') {
+      try {
+        await cancelBookingCalendarEvent({ business, booking });
+      } catch (calendarError) {
+        console.error('Google Calendar cancellation failed:', calendarError.message);
+      }
+    }
+
+    let emailResult = null;
+    if (business && booking.serviceId) {
+      emailResult = { sent: 'processing' };
+      sendBookingNotification({
+        business,
+        service: booking.serviceId,
+        booking,
+        type: status === 'cancelled' ? 'cancelled' : 'status',
+      }).catch(emailError => console.error('Booking status email failed:', emailError.message));
+    }
+
+    res.json({ message: 'Booking updated', booking, email: emailResult });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
 /**
- * Processes a withdrawal request from the user's available wallet balance.
- * Validates minimum amount, available balance, and complete payout details.
- * Creates a withdrawal record and a pending hold transaction.
+ * Reschedules an existing booking to a new date and time slot.
+ * Validates for conflicting bookings to prevent double-booking.
+ * Updates the existing Google Calendar event and sends a reschedule notification email.
  * 
- * @param {Object} req - Express request object containing the withdrawal amount.
+ * @param {Object} req - Express request object containing booking ID in params and new date/time in body.
  * @param {Object} res - Express response object.
  */
-export const requestWithdrawal = async (req, res) => {
+export const rescheduleBooking = async (req, res) => {
   try {
-    const userId = toObjectId(req.user.id);
-    const amount = Math.round(Number(req.body.amount || 0));
-    const user = await User.findById(userId).select('payoutDetails');
+    const { date, startTime, endTime } = req.body;
 
-    if (!user?.payoutDetails?.isComplete) {
-      return res.status(400).json({ message: 'Add payout details before requesting a withdrawal' });
+    if (!date || !startTime || !endTime) {
+      return res.status(400).json({ message: 'Date, start time, and end time are required' });
     }
 
-    const summary = await getWalletSummary(userId);
-    if (!amount || amount < 100) {
-      return res.status(400).json({ message: 'Withdrawal amount must be at least 100 paise' });
+    const booking = await Booking.findOne({ _id: req.params.id, userId: req.user.id });
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
     }
 
-    if (amount > summary.available) {
-      return res.status(400).json({ message: 'Withdrawal amount exceeds available balance' });
-    }
-
-    const withdrawal = await Withdrawal.create({
-      userId,
-      amount,
-      payoutSnapshot: user.payoutDetails,
+    const conflictingBookings = await Booking.find({
+      _id: { $ne: booking._id },
+      userId: req.user.id,
+      date,
+      status: { $nin: ['cancelled', 'payment_failed'] },
     });
 
-    await WalletTransaction.create({
-      userId,
-      withdrawalId: withdrawal._id,
-      type: 'withdrawal_hold',
-      amount,
-      status: 'pending',
-      description: 'Withdrawal requested',
-    });
+    const hasConflict = conflictingBookings.some((candidate) => (
+      timesOverlap(startTime, endTime, candidate.startTime, candidate.endTime)
+    ));
 
-    res.status(201).json({ message: 'Withdrawal requested', withdrawal });
+    if (hasConflict) {
+      return res.status(409).json({ message: 'That slot is already booked' });
+    }
+
+    booking.date = date;
+    booking.startTime = startTime;
+    booking.endTime = endTime;
+    booking.status = booking.status === 'cancelled' ? 'confirmed' : booking.status;
+    booking.isRescheduled = true;
+    booking.rescheduleCount = (booking.rescheduleCount || 0) + 1;
+
+    const [business, service] = await Promise.all([
+      User.findById(req.user.id),
+      Service.findById(booking.serviceId),
+    ]);
+
+    if (business && service) {
+      try {
+        const calendarResult = await updateBookingCalendarEvent({ business, service, booking });
+        booking.googleEventId = calendarResult.googleEventId || booking.googleEventId || '';
+        booking.customerCalendarUrl = calendarResult.customerCalendarUrl || booking.customerCalendarUrl;
+      } catch (calendarError) {
+        console.error('Google Calendar reschedule failed:', calendarError.message);
+      }
+    }
+
+    await booking.save();
+
+    const populatedBooking = await Booking.findById(booking._id).populate('serviceId', 'name duration price');
+
+    let emailResult = null;
+    if (business && service) {
+      emailResult = { sent: 'processing' };
+      sendBookingNotification({ business, service, booking: populatedBooking, type: 'rescheduled' })
+        .catch(emailError => console.error('Booking reschedule email failed:', emailError.message));
+    }
+
+    res.json({ message: 'Booking rescheduled', booking: populatedBooking, email: emailResult });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
