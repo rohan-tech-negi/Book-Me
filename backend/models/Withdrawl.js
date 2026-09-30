@@ -19,7 +19,19 @@ const withdrawalSchema = new mongoose.Schema({
         type: String,
         enum: ['pending', 'completed', 'rejected'],
         default: 'pending'
-    }
+    },
+    payoutSnapshot:{
+        accountHoldrName: String,
+        bankName: String,
+        accountLast4: String,
+        ifsc: String,
+        upiId: String
+    },
+    adminNote:{
+        type: String,
+        default: '',
+        trim: true
+    },
 }, { timestamps: true })
 
 const Withdrawal = mongoose.model('Withdrawal', withdrawalSchema)
