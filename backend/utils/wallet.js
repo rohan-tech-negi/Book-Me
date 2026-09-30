@@ -21,3 +21,35 @@ export const createBookingPayouttransaction= async({booking, description}) => {
         throw error
     }
 }
+
+export const getWalletSummary = async(userId)=>{
+    const [rows, withdrawlRows] = await Promise.all([
+        WalletTransaction.aggregate([
+            {$match: {user}},
+            {
+                $group: {
+                    _id: '$type',
+                    total: {$sum: '$amount'}
+                }
+            }
+        ]),
+
+        Withdrawal.aggregate([
+            {$match: {userId}},
+            {
+                $grout:{
+                    _id: '$status',
+                    total: {$sum : '$amount'}
+                }
+            }
+    ])
+    ])
+
+ return {
+    earned, 
+    withdrawOrPending: held - reversed,
+    pendingWithdrawals,
+    paidWithdrawals,
+    available: Math.max(0, earned - held + reversed)
+ }   
+}
