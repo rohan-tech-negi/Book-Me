@@ -67,4 +67,31 @@ export const getPublicBusiness = async(req,res)=>{
     }
 }
 
-export
+export const getPublicSLots = async(req,res)=>{
+    try {
+        const{date, serviceId} = req.query
+        if(!date || !serviceId){
+           return res.status(400).json({message: 'Date and service are reuqired'}) 
+        }
+        const business = await getBusinessBySlug(req.params.slug)
+        if(!business){
+            return res.status(404).json({message:"Business not found"})
+        }
+
+        const service = await Service.findOne({
+            _id: serviceId,
+            userId: business._id,
+            isActive:true,
+            isDeleted: {$ne: true}
+
+        })
+        if(!service){
+            return res.status(404).json({message: 'Servicenot found'})
+        }
+        const slots = await generateSlots({userId : business_id, service, date})
+
+        res.json({slots})
+    } catch (error) {
+        res.status(500).json({message: "Service error", error: error.message})
+    }
+}
