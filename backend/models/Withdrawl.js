@@ -11,6 +11,10 @@ const withdrawalSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    cureency:{
+        type: String,
+        default:'inr'
+    },
     status: {
         type: String,
         enum: ['pending', 'completed', 'rejected'],
