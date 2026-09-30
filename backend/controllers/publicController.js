@@ -49,8 +49,22 @@ const findActiveSlotBooking = ({userId, date}) =>{
 
 export const getPublicBusiness = async(req,res)=>{
     try {
-        
+        const business = await  getBusinessBySlug(req.params.slug)
+
+        if(!business){
+            return res.status(404).json({message: 'Business not found'})
+        }
+
+        const services = await Service.find({
+            userId: business_id,
+            isActive: true,
+            isDeleted: {$ne: true}
+        }).sort({name: 1})
+
+        res.json({business: toPublicBusiness(business),services})
     } catch (error) {
-        
+        res.status(500).json({message: 'Server error', error: error.message})
     }
 }
+
+export
