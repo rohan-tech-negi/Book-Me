@@ -338,3 +338,50 @@ const confirmPaidBooking = async ({ booking, business, service, session }) => {
 
   return booking;
 };
+
+export const getBookingStatus = async (req, res) => {
+  try {
+    const { session_id: sessionId, booking_id: bookingId } = req.query;
+    const query = sessionId ? { stripeSessionId: sessionId } : { _id: bookingId };
+
+    if (!sessionId && !bookingId) {
+      return res.status(400).json({ message: 'Booking identifier is required' });
+    }
+
+    let booking = await Booking.findOne(query).populate('serviceId', 'name duration price');
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    if (sessionId && booking.status === 'pending_payment') {
+      const stripe = getStripe();
+      if (!stripe) {
+        return res.status(503).json({ message: 'Stripe payments are not configured yet' });
+      }
+
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+      if (session.payment_status !== 'paid') {
+        booking.status = 'payment_failed';
+        booking.paymentStatus = 'failed';
+        await booking.save();
+        return res.status(402).json({ message: 'Payment was not successful. No booking was created.', booking });
+      }
+
+      const [business, service] = await Promise.all([
+        User.findById(booking.userId),
+        Service.findById(booking.serviceId),
+      ]);
+
+      if (!business || !service) {
+        return res.status(404).json({ message: 'Booking business or service was not found' });
+      }
+
+      await confirmPaidBooking({ booking, business, service, session });
+      booking = await Booking.findById(booking._id).populate('serviceId', 'name duration price');
+    }
+
+    res.json({ booking });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
