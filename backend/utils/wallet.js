@@ -46,6 +46,11 @@ export const getWalletSummary = async(userId)=>{
     ])
 
     const totals = rows.reduce((acc, row)=> ({...acc, [row._id] : row.total}), {})
+    const withdrawlTotals = withdrawlRows.reduce((acc, row)=> ({...acc, [row._id]: row.total}),{})
+    const earned = totals.booking_payout || 0
+    const held = totals.withdrawal_hold || 0;
+    const reversed = totals.withdrawl_reversal || 0;
+    const pendingWithdrawals = withdrawlTotals.paid || 0
 
  return {
     earned, 
