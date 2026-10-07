@@ -118,3 +118,29 @@ export const requestPublicBookingOtp = async(req,res)=>{
         res.status(503).json({message: error.message})
     }
 }
+
+
+export const verifyPublicBookingOtp = async (req, res) => {
+  try {
+    const { customerEmail, emailOtp } = req.body;
+    
+    if (!customerEmail || !emailOtp) {
+      return res.status(400).json({ message: 'Email and OTP are required' });
+    }
+
+    const otpResult = await verifyEmailOtp({
+      email: customerEmail,
+      purpose: 'booking',
+      code: emailOtp,
+      consume: false,
+    });
+
+    if (!otpResult.verified) {
+      return res.status(400).json({ message: otpResult.reason || 'Invalid OTP' });
+    }
+
+    res.json({ message: 'OTP verified' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
