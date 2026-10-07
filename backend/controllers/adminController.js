@@ -102,3 +102,40 @@ const getAdminSummary = async () => {
     withdrawalHolds: Math.max(walletWithdrawalHold, bookingWithdrawalHold),
   };
 };
+
+
+const isAdminPasswordIsValid = async(password) =>{
+    if(process.env.ADMIN_PASSWORD_HASH){
+        return bcrypt.compare(password, process.env.ADMIN_PASSWORD_HASH)
+    }
+
+    return password === process.env.ADMIN_PASSWORD
+}
+
+export const loginAdmin = async(req,res)=>{
+    try {
+        const {email, password} = req.body
+        const adminEmail = (process.env.ADMIN_EMAIL || '').toLowerCase().trim()
+
+        if(!adminEmail || (!process.env.ADMIN_PASSWORD || !process.env.ADMIN_PASSWORD_HASH)){
+            return res.status(503).json({message: "admin login is not configure"})
+
+        }
+
+        if(!email || !password || email.toLowerCase().trim()!== adminEmail){
+            return res.status(401).json({message: "Invalid admin credentials"})
+
+        }
+        const passwordValid = await isAdminPasswordIsValid(password)
+        if(!passwordValid){
+            return res.status(401).json({message: "Invalid admin credentials"})
+        }
+        res.json({
+            message: "admin logged in successfully",
+            token: createAdminToken(adminEmail),
+            admin: {email: adminEmail}
+        })
+    } catch (error) {
+        res.status(500).json({message: "Server error", error: error.message})
+    }
+}
