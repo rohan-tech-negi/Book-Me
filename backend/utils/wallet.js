@@ -45,6 +45,8 @@ export const getWalletSummary = async(userId)=>{
     ])
     ])
 
+    const totals = rows.reduce((acc, row)=> ({...acc, [row._id] : row.total}), {})
+
  return {
     earned, 
     withdrawOrPending: held - reversed,
