@@ -8,6 +8,7 @@ import serviceRoutes from "./routes/service.routes.js"
 import availibilityRoutes from "./routes/availibility.routes.js"
 import integrationRoutes from "./routes/integration.routes.js"
 import paymentRoutes from "./routes/payment.routes.js"
+import bookingRoutes from "./routes/booking.routes.js"
 
 
 const PORT = process.env.PORT || 5002;
@@ -28,6 +29,7 @@ app.use('/api/services', serviceRoutes)
 app.use("/api/availibility", availibilityRoutes)
 app.use('/api/integrations', integrationRoutes)
 app.use('/api/payment', paymentRoutes)
+app.use('/api/bookings', bookingRoutes)
 const server = http.createServer(app)
 
 server.on('error', (error) => {
