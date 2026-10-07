@@ -385,3 +385,26 @@ export const getBookingStatus = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
+export const cancelPublicBookingPayment = async (req, res) => {
+  try {
+    const { booking_id: bookingId } = req.body;
+
+    if (!bookingId) {
+      return res.status(400).json({ message: 'Booking identifier is required' });
+    }
+
+    const booking = await Booking.findOne({ _id: bookingId, status: 'pending_payment' });
+    if (!booking) {
+      return res.json({ message: 'No pending booking to cancel' });
+    }
+
+    booking.status = 'payment_failed';
+    booking.paymentStatus = 'failed';
+    await booking.save();
+
+    res.json({ message: 'Payment was not completed. No booking was created.' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
