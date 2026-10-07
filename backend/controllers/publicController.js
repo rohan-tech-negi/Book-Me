@@ -95,3 +95,6 @@ export const getPublicSLots = async(req,res)=>{
         res.status(500).json({message: "Service error", error: error.message})
     }
 }
+
+
+export const 
