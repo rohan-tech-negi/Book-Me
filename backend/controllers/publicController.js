@@ -97,4 +97,24 @@ export const getPublicSLots = async(req,res)=>{
 }
 
 
-export const 
+export const requestPublicBookingOtp = async(req,res)=>{
+    try {
+        const {customerEmail} = req.body;
+        const normalizedEmail = customerEmail?.toLowerCase().trim()
+
+        if(!normalizedEmail){
+            return res.status(400).json({message: 'Customer email is required'})
+
+        }
+
+        const business = await getBusinessBySlug(req.params.slug)
+        if(!business){
+            return res.status(404).json({message: "business is not found"})
+        }
+
+        const result = await requestEmailOtp({email: normalizedEmail, purpose: 'booking'})
+        res.json({message: 'Verification code sent', result})
+    } catch (error) {
+        res.status(503).json({message: error.message})
+    }
+}
