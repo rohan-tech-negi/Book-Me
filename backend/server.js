@@ -1,48 +1,50 @@
-import express from "express"
-import cors from "cors"
-import 'dotenv/config'
-import http from "http"
+import express from "express";
+import cors from "cors";
+import 'dotenv/config';
+import http from "http";
 import { connectDB } from "./config/db.js";
-import authRoutes from './routes/auth.routes.js'
-import serviceRoutes from "./routes/service.routes.js"
-import availibilityRoutes from "./routes/availibility.routes.js"
-import integrationRoutes from "./routes/integration.routes.js"
-import paymentRoutes from "./routes/payment.routes.js"
-import bookingRoutes from "./routes/booking.routes.js"
-import publicRoutes from "./routes/public.routes.js"
-
+import authRoutes from './routes/auth.routes.js';
+import serviceRoutes from "./routes/service.routes.js";
+import availibilityRoutes from "./routes/availibility.routes.js";
+import integrationRoutes from "./routes/integration.routes.js";
+import paymentRoutes from "./routes/payment.routes.js";
+import bookingRoutes from "./routes/booking.routes.js";
+import publicRoutes from "./routes/public.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
 
 const PORT = process.env.PORT || 5002;
-const app = express()
+const app = express();
 
+app.use(cors());
+app.use(express.json());
 
-app.use(cors())
-app.use(express.json())
+connectDB();
 
-connectDB()
+app.get("/", (req, res) => {
+    res.send("API working");
+});
 
-app.get("/",(req,res)=>{
-    res.send("API working")
-})
+app.use("/api/auth", authRoutes);
+app.use('/api/services', serviceRoutes);
+app.use("/api/availibility", availibilityRoutes);
+app.use("/api/availability", availibilityRoutes);
+app.use('/api/integrations', integrationRoutes);
+app.use('/api/payment', paymentRoutes);
+app.use('/api/bookings', bookingRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/public', publicRoutes);
+app.use('/api/public', publicRoutes);
 
-app.use("/api/auth", authRoutes)
-app.use('/api/services', serviceRoutes)
-app.use("/api/availibility", availibilityRoutes)
-app.use('/api/integrations', integrationRoutes)
-app.use('/api/payment', paymentRoutes)
-app.use('/api/bookings', bookingRoutes)
-app.use('/public', publicRoutes)
-app.use('/api/public', publicRoutes)
-const server = http.createServer(app)
+const server = http.createServer(app);
 
 server.on('error', (error) => {
     if (error.code === "EADDRINUSE") {
-        console.log(`Port ${PORT} is already in use`)
-        process.exit(1)
+        console.log(`Port ${PORT} is already in use`);
+        process.exit(1);
     }
-    throw error
-})
+    throw error;
+});
 
-server.listen(PORT, ()=>{
-    console.log(`Server started on http://localhost:${PORT}`)
-})
+server.listen(PORT, () => {
+    console.log(`Server started on http://localhost:${PORT}`);
+});
