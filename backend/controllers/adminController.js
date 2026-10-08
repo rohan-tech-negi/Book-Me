@@ -170,3 +170,55 @@ export const getAdminDashboard = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
+export const updateWithdrawalStatus = async (req, res) => {
+  try {
+    const { status, adminNote } = req.body;
+    const allowedStatuses = ['pending', 'processing', 'paid', 'rejected'];
+
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({ message: 'Invalid withdrawal status' });
+    }
+
+    const withdrawal = await Withdrawal.findById(req.params.id);
+    if (!withdrawal) {
+      return res.status(404).json({ message: 'Withdrawal not found' });
+    }
+
+    if (terminalWithdrawalStatuses.includes(withdrawal.status)) {
+      return res.status(400).json({
+        message: `Withdrawal is already ${withdrawal.status} and cannot be changed`,
+      });
+    }
+
+    if (status === 'rejected' && withdrawal.status !== 'rejected') {
+      const existingReversal = await WalletTransaction.findOne({
+        withdrawalId: withdrawal._id,
+        type: 'withdrawal_reversal',
+      });
+
+      if (!existingReversal) {
+        await WalletTransaction.create({
+          userId: withdrawal.userId,
+          withdrawalId: withdrawal._id,
+          type: 'withdrawal_reversal',
+          amount: withdrawal.amount,
+          status: 'reversed',
+          description: 'Withdrawal rejected and funds returned',
+        });
+      }
+    }
+
+    withdrawal.status = status;
+    withdrawal.adminNote = adminNote || withdrawal.adminNote;
+    await withdrawal.save();
+    const [summary] = await Promise.all([
+      getAdminSummary(),
+      withdrawal.populate('userId', 'name email businessName'),
+    ]);
+
+    res.json({ message: `Withdrawal marked as ${status}`, withdrawal, summary });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
