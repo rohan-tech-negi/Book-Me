@@ -175,3 +175,7 @@ export const cancelBookingCalendarEvent = async ({ business, booking }) => {
 
   return true;
 };
+
+export const createBookingCalenderEvent = createBookingCalendarEvent;
+export const updateBookingCalenderEvent = updateBookingCalendarEvent;
+export const cancelBookingCalenderEvent = cancelBookingCalendarEvent;

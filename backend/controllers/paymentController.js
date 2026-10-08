@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import User from '../models/user.models.js';
-import WalletTransaction from '../models/WalletTransaction.js';
+import WalletTransaction from '../models/WalletTransaction.models.js';
 import Withdrawal from '../models/Withdrawal.js';
 import { getWalletSummary } from '../utils/wallet.js';
 
@@ -76,7 +76,7 @@ export const updatePayoutDetails = async (req, res) => {
       { new: true }
     ).select('payoutDetails');
 
-    res.json({ message: 'Payout details saved', payoutDetails: user.payoutDetails });
+    res.json({ message: 'Payout details saved', payoutDetails: user?.payoutDetails || payoutDetails });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }

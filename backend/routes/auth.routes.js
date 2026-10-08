@@ -1,16 +1,18 @@
-import express from "express"
+import express from "express";
 
-import { getMe, loginUser, registerUser, requestRegistrationOTP, updateProfile, verifyRegistrationOtp } from "../controllers/authController.js"
+import { getMe, loginUser, registerUser, requestRegistrationOTP, updateProfile, verifyRegistrationOtp } from "../controllers/authController.js";
 
-import auth from "../middleware/auth.js"
+import auth from "../middleware/auth.js";
 
-const router = express.Router()
+const router = express.Router();
 
-router.post('/register', registerUser)
-router.post('/register/request-otp', requestRegistrationOTP)
-router.post('/register/verify-otp', verifyRegistrationOtp)
-router.post('/login', loginUser)
-router.post('/me', auth, getMe)
-router.post('/profile', auth, updateProfile)
+router.post('/register', registerUser);
+router.post('/register/request-otp', requestRegistrationOTP);
+router.post('/register/verify-otp', verifyRegistrationOtp);
+router.post('/login', loginUser);
+router.get('/me', auth, getMe);
+router.post('/me', auth, getMe);
+router.put('/profile', auth, updateProfile);
+router.post('/profile', auth, updateProfile);
 
-export default router
+export default router;

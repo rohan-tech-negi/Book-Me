@@ -1,15 +1,16 @@
-import bcrypt from 'bcrypt.js'
+import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import Booking from '../models/Booking.models.js'
 import User from '../models/user.models.js'
 import WalletTransaction from '../models/WalletTransaction.models.js'
-import Withdrawal from '../models/Withdrawl.js'
+import Withdrawal from '../models/Withdrawal.js'
 
 const createAdminToken = (email) =>{
-    return jwt.sign({email, role: 'admin'}, process.env.JWT_SECRET, {expiresIn: '7'})
+    return jwt.sign({email, role: 'admin'}, process.env.JWT_SECRET, {expiresIn: '7d'})
 }
 
-const terminalWithdrawlStatus = ['paid', 'rejected']
+const terminalWithdrawalStatus = ['paid', 'rejected']
+const terminalWithdrawlStatus = terminalWithdrawalStatus
 
 const sumByKey = (rows) => rows.reduce((acc, row)=> ({...acc, [row._id]: row.total}), {})
 
@@ -117,8 +118,8 @@ export const loginAdmin = async(req,res)=>{
         const {email, password} = req.body
         const adminEmail = (process.env.ADMIN_EMAIL || '').toLowerCase().trim()
 
-        if(!adminEmail || (!process.env.ADMIN_PASSWORD || !process.env.ADMIN_PASSWORD_HASH)){
-            return res.status(503).json({message: "admin login is not configure"})
+        if(!adminEmail || (!process.env.ADMIN_PASSWORD && !process.env.ADMIN_PASSWORD_HASH)){
+            return res.status(503).json({message: "admin login is not configured"})
 
         }
 

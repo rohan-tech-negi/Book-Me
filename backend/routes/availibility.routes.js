@@ -1,12 +1,12 @@
-import express from "express"
+import express from "express";
 
-import { listAvailability, saveAvailability } from "../controllers/availabilityController.js"
+import { listAvailability, saveAvailability } from "../controllers/availabilityController.js";
 
-import auth from "../middleware/auth.js"
+import auth from "../middleware/auth.js";
 
-const router = express.Router()
+const router = express.Router();
 
-router.get("/", auth, listAvailability)
-router.post("/", auth, saveAvailability)
+router.get("/", auth, listAvailability);
+router.post("/", auth, saveAvailability);
 
-export default router
+export default router;
