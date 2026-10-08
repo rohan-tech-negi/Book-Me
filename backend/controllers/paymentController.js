@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import User from '../models/User.js';
+import User from '../models/user.models.js';
 import WalletTransaction from '../models/WalletTransaction.js';
 import Withdrawal from '../models/Withdrawal.js';
 import { getWalletSummary } from '../utils/wallet.js';
