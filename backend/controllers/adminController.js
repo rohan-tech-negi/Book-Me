@@ -140,3 +140,33 @@ export const loginAdmin = async(req,res)=>{
         res.status(500).json({message: "Server error", error: error.message})
     }
 }
+
+
+export const getAdminDashboard = async (req, res) => {
+  try {
+    const [
+      users,
+      summary,
+      withdrawals,
+      recentBookings,
+    ] = await Promise.all([
+      User.find().select('name email businessName slug payoutDetails createdAt').sort({ createdAt: -1 }).limit(100),
+      getAdminSummary(),
+      Withdrawal.find().populate('userId', 'name email businessName').sort({ createdAt: -1 }).limit(50),
+      Booking.find({ paymentStatus: 'paid' })
+        .populate('userId', 'name email businessName')
+        .populate('serviceId', 'name')
+        .sort({ updatedAt: -1 })
+        .limit(10),
+    ]);
+
+    res.json({
+      summary,
+      users,
+      withdrawals,
+      recentBookings,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
