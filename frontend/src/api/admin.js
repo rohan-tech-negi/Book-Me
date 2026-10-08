@@ -14,6 +14,17 @@ adminClient.interceptors.request.use((config) => {
     return config;
 })
 
-adminClient.interceptors/Response.use((response)=> {
-    
+adminClient.interceptors.response.use((response)=> {
+    const token = response.data?.token;
+    if(token){
+        localStorage.setItem('adminToken', token)
+        
+    }
+    return response
 })
+
+
+export const adminLogin = (data) => adminClient.post("/admin/login", data)
+export const getAdminDashboard = () => adminClient.get("/admin/dashboard")
+export const updateWithdrawlStatus = (id, data) => adminClient.patch(`/admin/withdrawls/${id}`, data)
+
