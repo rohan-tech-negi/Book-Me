@@ -11,7 +11,24 @@ const adminLoginPage = () => {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("")
 
-    const 
+    const handleSubmit =  async(event)=>{
+        event.preventDefault()
+        setLoading(true)
+        setMessage("")
+
+        try {
+            const {data} = await adminLogin(form)
+            if(data.token){
+                localStorage.setItem("adminToken", data.token)
+            }
+            navigate("/admin/dashboard")
+        } catch (error) {
+            setMessage(error.response?.data?.message || "Admin login failed")
+        }finally{
+            setLoading(false)
+        }
+    
+    }
   return (
     <div>adminLoginPage</div>
   )
