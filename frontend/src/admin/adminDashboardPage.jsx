@@ -226,9 +226,50 @@ const adminDashboardPage = () => {
                         <thead >
                           <tr className={s.tableHeadRow}>
                             <th className={s.th}>Business</th>
+                            <th className={s.th}>Email</th>
+                            <th className={s.th}>Booking Link</th>
+                            <th className={s.th}>Status</th>
                           </tr>
                         </thead>
+
+                        <tbody className={s.tbody}>
+                          {(dashboard?.users || []).map((user)=>{
+                            <tr key={user._id} className={s.tr}>
+                              <td className={s.td}>
+                                  <div className={s.userBusinessName}>
+                                    {user.businessName || user.name}
+                                  </div>
+                              </td>
+
+                              <td className={s.tdMuted}>{user.email}</td>
+                              <td className={s.tdMuted}>{user.slug}</td>
+                              <td className={s.td}>
+                                <span className={`${s.payoutStatusBadge} ${getPayoutStatusClass(user.payoutDetails?.isComplete)}`}>
+                                    {user.payoutDetails?.isComplete ? "ready" : "pending details"}
+                                </span>
+                              </td>
+                            </tr>
+                          })}
+
+                          {dashboard && dashboard.users?.length === 0 && (
+                            <tr>
+                              <td colSpan="4" className={s.emptyTableCell}>
+                                No Users Found
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
                       </table>
+                    </div>
+                </div>
+
+                <div className={s.withdrawalCard}>
+                    <h2 className={`${s.tableTitle} ${s.sectionTitleSpacing}`}>
+                        <Clock className={s.tableTitleIcon}>Withdrawl Requests</Clock>
+                    </h2>
+
+                    <div className=''>
+
                     </div>
                 </div>
             </section>
