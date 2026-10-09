@@ -34,10 +34,23 @@ const adminLoginPage = () => {
         <div className={s.card}>
             {/* left decorative panel */}
             <div className={s.leftPanel}>
-                <div>
-                    
+                <p className={s.leftEyebrow}>System access</p>
+                <div className={s.leftLogoRow}>
+                    <img src={} className={s.leftLogoImg}/>
                 </div>
+                <h1 className={s.leftHeading}>
+                    BookMe
+                    <br />
+                    <span className={s.leftHeadingAccent}>Admin</span>
+                    </h1>
+                    <p className={s.leftDescription}>
+                        Money momvement, user overview, and payout request.Moniter platfrom from one desk
+                    </p>
             </div>
+
+
+            {/* right form panel */}
+            
         </div>
 
     </div>
