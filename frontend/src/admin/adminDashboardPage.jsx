@@ -51,7 +51,19 @@ const adminDashboardPage = () => {
         }
     }, [navigate])
 
-    const 
+    const requestWithdrawlStatusChange = (withdrawl , status) =>{
+        if(withdrawl.status === status || 
+            isTerminalWithdrawlStatus(withdrawl.status)
+        ){
+            return
+        }
+        setPendingWithdrawlAction({withdrawl, status})
+    }
+
+    const closeWithdrawlConfirm = ()=>{
+        if(updatingWithdrawlId) return 
+        setPendingWithdrawlAction(null)
+    }
 
   return (
     <div>adminDashboardPage</div>
