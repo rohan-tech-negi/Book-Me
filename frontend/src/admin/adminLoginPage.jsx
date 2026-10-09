@@ -50,7 +50,42 @@ const adminLoginPage = () => {
 
 
             {/* right form panel */}
-            
+            <div className={s.rightPanel}>
+                <h2 className={s.formTitle}>
+                    Admin login
+                </h2>
+                <p className={s.formSubtitle}>
+                    Enter your credentials to access the dashboard
+                </p>
+                {message && <div className={s.messageBos}>{message}</div>}
+
+                <form onSubmit={handleSubmit} className={s.form}>
+                    <div>
+                        <label className={s.inputLabel}>Email address</label>
+                        <input type="email" 
+                        value={form.email}
+                        onChange={(event)=> 
+                            setForm((prev) => ({...prev, email: email.target.value}))
+                        }  className={s.textInput}
+                        placeholder='Enter admin email'
+                        required/>
+                        <div>
+                            <label className={s.inputLabel}>Password</label>
+                            <label type="password"
+                            value={form.password}
+                            onChange={(event)=>{
+                                setForm((prev)=> ({...prev, password: event.target.value}))
+                            }}
+                            className={s.textInput}
+                            placeholder="*******"
+                            required></label>
+                        </div>
+                        <button type='submit'  disabled={loading} className={s.submitButton}>
+                            {loading ? "Authenticating..." : "secure login"}
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
 
     </div>
