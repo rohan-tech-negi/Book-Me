@@ -20,6 +20,39 @@ const formatMoney = (amount = 0, currency = "INR") =>
     const formatStatusLabel = (status = "") => status ? `${status.slice(0,1).toUpperCase()} ${status.slice(1)}` : ""
 
 const adminDashboardPage = () => {
+
+    const navigate = useNavigate()
+    const [dashboard, setDashboard] = useState(null)
+    const [message, setMessage] = useState("")
+    const [updatigWithdrawlId, setUpdatingWithdrawlId] = useState("")
+    const [pendingWithdrawlAction, setPendingWithdrawlAction] = useState(null)
+
+    useEffect(() =>{
+        if(!localStorage.getItem("adminToken")){
+            navigate("/admin/login")
+            return undefined
+        }
+        let isActive = true
+
+        getAdminDashboard()
+        .then(({data})=>{
+            if(isActive){
+                setDashboard(data)
+            }
+        })
+        .catch((error)=>{
+            if(isActive){
+                setMessage(error.response?.data?.message || "Could not load admin dashboard")
+            }
+        })
+
+        return () =>{
+            isActive = false
+        }
+    }, [navigate])
+
+    const 
+
   return (
     <div>adminDashboardPage</div>
   )
