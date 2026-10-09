@@ -220,6 +220,16 @@ const adminDashboardPage = () => {
                             Registered user
                         </h2>
                     </div>
+
+                    <div className={s.tableScrollContainer}>
+                      <table className={s.table}>
+                        <thead >
+                          <tr className={s.tableHeadRow}>
+                            <th className={s.th}>Business</th>
+                          </tr>
+                        </thead>
+                      </table>
+                    </div>
                 </div>
             </section>
        </main>
