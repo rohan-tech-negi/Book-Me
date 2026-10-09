@@ -163,7 +163,68 @@ const adminDashboardPage = () => {
   ];
 
   return (
-    <div>adminDashboardPage</div>
+    <div className={s.pageContainer}>
+       <header className={s.header}>
+            <div className={s.headerInner}>
+                <div className={s.logoRow}>
+                    <img src={} className={s.logoImg} alt="" />
+                    <Link to="/admin/dashboard" className={s.headerActions}>
+                    Client App
+                    </Link> 
+
+                    <button type='button' onClick={logout} className={s.logoutButton}>Logout</button>
+                </div>
+            </div>
+       </header>
+
+       <main className={s.main}>
+            <section className={s.heroSection}>
+                <div>
+                    <h1 className={s.heroTitle}>
+                        Platform <span className={s.heroTitleAccent}>Overview</span>
+                    </h1>
+
+                    <p className={s.heroSubtitle}>
+                        User, bookings, Revenue, and active withdrawls
+                    </p>
+                </div>
+
+                {message && <div className={s.messageBanner}>{message}</div>}
+            </section>
+
+            <section className={s.statsGrid}>
+                {statCards.map((stat, i)=>{
+                    <div key={i} className={s.statCard}>
+                        <div className={`${s.statIconContainer} ${stat.bg} ${stat.c}`}>
+                            <stat.icon className={s.statIcon}></stat.icon>
+
+                        </div>
+
+                        <div>
+                            <p className={s.statLabel}>
+                                {stat.label}
+                            </p>
+                            <h2 className={s.statValue}>
+                                {stat.value}
+                            </h2>
+                        </div>
+                    </div>
+                })}
+            </section>
+
+            <section className={s.tablesGrid}>
+                <div className={s.tableCard}>
+                    <div className={s.tableHeader}>
+                        <h2 className={s.tableTitle}>
+                            <UserCheck className={s.tableTitleIcon}></UserCheck>
+                            Registered user
+                        </h2>
+                    </div>
+                </div>
+            </section>
+       </main>
+
+    </div>
   )
 }
 
