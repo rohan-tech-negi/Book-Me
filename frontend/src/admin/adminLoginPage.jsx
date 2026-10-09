@@ -3,6 +3,7 @@ import { useState } from 'react'
 import {useNavigate} from "react-router-dom"
 import { adminLogin } from '../api/admin'
 // import { adminLoginPageStyles as s } from '../api/admin'
+import { adminDashboardPageStyles as s } from '../assests/dummy'
 
 
 const adminLoginPage = () => {
