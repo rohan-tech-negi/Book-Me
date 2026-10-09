@@ -31,8 +31,13 @@ const adminLoginPage = () => {
     }
   return (
     <div className={s.pageContainer}>
-        <div>
-            
+        <div className={s.card}>
+            {/* left decorative panel */}
+            <div className={s.leftPanel}>
+                <div>
+                    
+                </div>
+            </div>
         </div>
 
     </div>
