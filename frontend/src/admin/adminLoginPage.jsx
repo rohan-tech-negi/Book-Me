@@ -30,7 +30,12 @@ const adminLoginPage = () => {
     
     }
   return (
-    <div>adminLoginPage</div>
+    <div className={s.pageContainer}>
+        <div>
+            
+        </div>
+
+    </div>
   )
 }
 
