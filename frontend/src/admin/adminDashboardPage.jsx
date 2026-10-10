@@ -1,32 +1,31 @@
-import React from 'react'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { getAdminDashboard, updateWithdrawlStatus } from '../api/admin'
-import {Users, Wallet, TrendingUp, IndianRuppe, LandMark, CheckCircle, XOctagon, Clock, UserCheck, ShieldCheck} from "lucide-react"
+import { Users, Wallet, TrendingUp, Landmark, CheckCircle, CircleX, Clock, UserCheck, ShieldCheck, IndianRupee } from "lucide-react"
 import { adminDashboardPageStyles as s } from '../assests/dummy'
 import logo from '../assests/logo.png'
 
 const formatMoney = (amount = 0, currency = "INR") =>
-    new Intl.NumberFormat("en-IN", {styles: "currency", currency}).format(
+    new Intl.NumberFormat("en-IN", { style: "currency", currency }).format(
         amount/100
     )
 
-    const withdrawlStatuses = ["processing", "paid", "rejected"]
-    const terminalWithdrawlStatuses = ["paid", "rejected"]
+    const withdrawalStatuses = ["processing", "paid", "rejected"]
+    const terminalWithdrawalStatuses = ["paid", "rejected"]
 
-    const isTerminalWithdrawlStatus = (status)=>{
-        terminalWithdrawlStatuses.include(status)
+    const isTerminalWithdrawalStatus = (status)=>{
+        return terminalWithdrawalStatuses.includes(status);
     }
 
-    const formatStatusLabel = (status = "") => status ? `${status.slice(0,1).toUpperCase()} ${status.slice(1)}` : ""
+    const formatStatusLabel = (status = "") => status ? `${status.slice(0, 1).toUpperCase()}${status.slice(1)}` : ""
 
-const adminDashboardPage = () => {
+const AdminDashboardPage = () => {
 
     const navigate = useNavigate()
     const [dashboard, setDashboard] = useState(null)
     const [message, setMessage] = useState("")
-    const [updatigWithdrawlId, setUpdatingWithdrawlId] = useState("")
-    const [pendingWithdrawlAction, setPendingWithdrawlAction] = useState(null)
+    const [updatingWithdrawalId, setUpdatingWithdrawalId] = useState("")
+    const [pendingWithdrawalAction, setPendingWithdrawalAction] = useState(null)
 
     useEffect(() =>{
         if(!localStorage.getItem("adminToken")){
@@ -52,18 +51,18 @@ const adminDashboardPage = () => {
         }
     }, [navigate])
 
-    const requestWithdrawlStatusChange = (withdrawl , status) =>{
-        if(withdrawl.status === status || 
-            isTerminalWithdrawlStatus(withdrawl.status)
+    const requestWithdrawalStatusChange = (withdrawal, status) => {
+        if (withdrawal.status === status || 
+            isTerminalWithdrawalStatus(withdrawal.status)
         ){
             return
         }
-        setPendingWithdrawlAction({withdrawl, status})
+        setPendingWithdrawalAction({ withdrawal, status })
     }
 
-    const closeWithdrawlConfirm = ()=>{
-        if(updatingWithdrawlId) return 
-        setPendingWithdrawlAction(null)
+    const closeWithdrawalConfirm = ()=>{
+        if (updatingWithdrawalId) return 
+        setPendingWithdrawalAction(null)
     }
 
 
@@ -74,14 +73,14 @@ const adminDashboardPage = () => {
     setUpdatingWithdrawalId(withdrawal._id);
 
     try {
-      const { data } = await updateWithdrawalStatus(withdrawal._id, { status });
+      const { data } = await updateWithdrawlStatus(withdrawal._id, { status });
       setDashboard((prev) => {
         if (!prev) return prev;
 
         return {
           ...prev,
           summary: data.summary || prev.summary,
-          withdrawals: prev.withdrawals.map((withdrawal) =>
+          withdrawals: (prev.withdrawals || []).map((withdrawal) =>
             withdrawal._id === data.withdrawal._id
               ? data.withdrawal
               : withdrawal,
@@ -107,7 +106,7 @@ const adminDashboardPage = () => {
   const summary = dashboard?.summary || {};
   const pendingWithdrawal = pendingWithdrawalAction?.withdrawal;
   const WithdrawalConfirmIcon =
-    pendingWithdrawalAction?.status === "rejected" ? XOctagon : ShieldCheck;
+    pendingWithdrawalAction?.status === "rejected" ? CircleX : ShieldCheck;
   const isConfirmingWithdrawal =
     pendingWithdrawal && updatingWithdrawalId === pendingWithdrawal._id;
 
@@ -193,7 +192,7 @@ const adminDashboardPage = () => {
                     </h1>
 
                     <p className={s.heroSubtitle}>
-                        User, bookings, Revenue, and active withdrawls
+                        User, bookings, Revenue, and active withdrawals
                     </p>
                 </div>
 
@@ -241,7 +240,7 @@ const adminDashboardPage = () => {
                         </thead>
 
                         <tbody className={s.tbody}>
-                          {(dashboard?.users || []).map((user)=>{
+                          {(dashboard?.users || []).map((user) => (
                             <tr key={user._id} className={s.tr}>
                               <td className={s.td}>
                                   <div className={s.userBusinessName}>
@@ -257,7 +256,7 @@ const adminDashboardPage = () => {
                                 </span>
                               </td>
                             </tr>
-                          })}
+                          ))}
 
                           {dashboard && dashboard.users?.length === 0 && (
                             <tr>
@@ -273,12 +272,12 @@ const adminDashboardPage = () => {
 
                 <div className={s.withdrawalCard}>
                     <h2 className={`${s.tableTitle} ${s.sectionTitleSpacing}`}>
-                        <Clock className={s.tableTitleIcon}>Withdrawl Requests</Clock>
+                        <Clock className={s.tableTitleIcon} /> Withdrawal Requests
                     </h2>
 
                     <div className={s.withdrawalList}>
-                          {(dashboard?.withdrawal || []).map((withdrawal) =>{
-                            const isWithdrawlLocked = isTerminalWithdrawlStatus(
+                          {(dashboard?.withdrawals || []).map((withdrawal) =>{
+                            const isWithdrawalLocked = isTerminalWithdrawalStatus(
                               withdrawal.status
                             )
 
@@ -288,7 +287,7 @@ const adminDashboardPage = () => {
                                 <div className={s.withdrawalProviderHeader}>
                                     <div>
                                       <p className={s.withdrawalProviderName}>
-                                        {withdrawal.userId?.businessName || withdrawal.userId.name}
+                                        {withdrawal.userId?.businessName || withdrawal.userId?.name}
                                       </p>
                                     </div>
 
@@ -301,7 +300,7 @@ const adminDashboardPage = () => {
                                     <span className={s.withdrawalAmount}>
                                         {formatMoney(withdrawal.amount)}
                                     </span>
-                                    <div className={s.withdrawlStatuses}>
+                                    <div className={s.withdrawalStatuses}>
                                         <span className={`${s.withdrawalStatusBadge} ${getWithdrawalStatusClass(withdrawal.status)}`}>
                                             {withdrawal.status}
                                         </span>
@@ -310,25 +309,23 @@ const adminDashboardPage = () => {
                               </div>
 
                               <div className={s.withdrawalAccountIcon}>
-                                <LandMark className={s.withdrawalAccountIcon}>
-
-                                </LandMark>
+                                <Landmark className={s.withdrawalAccountIcon} />
                                 {withdrawal.payoutSnapshot?.bankName || "UPI Connection"}{" "}{" "}
                                 {withdrawal.payoutSnapshot?.accountLast4 ? `***** ${withdrawal.payoutSnapshot.accountLast4} ` : withdrawal.payoutSnapshot?.upiId}
                               </div>
 
                               <div className={s.withdrawalActions}>
-                                  {withdrawlStatuses.map((stats)=>{
-                                    const isCurrectStatus = withdrawal.status === status;
-                                    const isUpdatingThisWithdrawl = updatingWithdrawalId === withdrawal._id;
+                                  {withdrawalStatuses.map((status) => {
+                                    const isCurrentStatus = withdrawal.status === status;
+                                    const isUpdatingThisWithdrawal = updatingWithdrawalId === withdrawal._id;
 
                                     return (
-                                      <button key={status} type='button' onClick={()=> requestWithdrawlStatusChange(withdrawal, status)}
-                                      disabled={isUpdatingThisWithdrawl || isCurrectStatus || isWithdrawlLocked}
-                                      className={`${s.withdrawalActionBtn} ${isCurrectStatus ? s.withdrawalActionBtnActive : 
+                                      <button key={status} type='button' onClick={()=> requestWithdrawalStatusChange(withdrawal, status)}
+                                      disabled={isUpdatingThisWithdrawal || isCurrentStatus || isWithdrawalLocked}
+                                      className={`${s.withdrawalActionBtn} ${isCurrentStatus ? s.withdrawalActionBtnActive : 
                                       s.withdrawalActionBtnInactive}`}>
 
-                                        {isUpdatingThisWithdrawl && !isCurrectStatus ? "..." : formatStatusLabel(status)}
+                                        {isUpdatingThisWithdrawal && !isCurrentStatus ? "..." : formatStatusLabel(status)}
 
                                       </button>
                                     )
@@ -338,14 +335,14 @@ const adminDashboardPage = () => {
                             )
                           })}
 
-                          {dashboard && dashboard.withdrawals?.length === 0 && (
+                          {dashboard && (dashboard.withdrawals || []).length === 0 && (
                             <div className={s.emptyWithdrawals}>
                                 <div className={s.emptyWithdrawalsIconCircle}>
                                   <CheckCircle className={s.emptyWithdrawalsIcon}></CheckCircle>
 
                                 </div>
                                 <p className={s.emptyWithdrawalsText}>
-                                    No pending withdrawl requests
+                                    No pending withdrawal requests
                                 </p>
                             </div>
                           )}
@@ -467,4 +464,4 @@ const adminDashboardPage = () => {
   )
 }
 
-export default adminDashboardPage
+export default AdminDashboardPage
