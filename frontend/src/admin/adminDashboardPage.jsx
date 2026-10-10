@@ -331,14 +331,129 @@ const adminDashboardPage = () => {
                           })}
 
                           {dashboard && dashboard.withdrawals?.length === 0 && (
-                            <div>
-                              
+                            <div className={s.emptyWithdrawals}>
+                                <div className={s.emptyWithdrawalsIconCircle}>
+                                  <CheckCircle className={s.emptyWithdrawalsIcon}></CheckCircle>
+
+                                </div>
+                                <p className={s.emptyWithdrawalsText}>
+                                    No pending withdrawl requests
+                                </p>
                             </div>
                           )}
                     </div>
                 </div>
             </section>
-       </main>
+
+             <section className={s.recentBookingsCard}>
+          <h2 className={`${s.tableTitle} ${s.sectionTitleSpacing}`}>
+            <CheckCircle className={s.tableTitleIcon} /> Recent Paid Bookings
+          </h2>
+          <div className={s.tableScrollContainer}>
+            <table className={s.table}>
+              <thead>
+                <tr className={s.tableHeadRow}>
+                  <th className={s.th}>Provider</th>
+                  <th className={s.th}>Service</th>
+                  <th className={s.th}>Gross</th>
+                  <th className={s.th}>Fees</th>
+                  <th className={s.th}>Provider Share</th>
+                  <th className={s.th}>Status</th>
+                </tr>
+              </thead>
+              <tbody className={s.tbody}>
+                {(dashboard?.recentBookings || []).map((booking) => (
+                  <tr key={booking._id} className={s.tr}>
+                    <td className={s.tdBold}>
+                      {booking.userId?.businessName || booking.userId?.name}
+                    </td>
+                    <td className={s.tdMuted}>
+                      {booking.serviceId?.name || "Service"}
+                    </td>
+                    <td className={s.tdBold}>{formatMoney(booking.amount)}</td>
+                    <td className={s.tdFees}>
+                      {formatMoney(booking.platformFeeAmount)}
+                    </td>
+                    <td className={s.tdEarnings}>
+                      {formatMoney(booking.providerPayoutAmount)}
+                    </td>
+                    <td className={s.td}>
+                      <span className={s.bookingPayoutBadge}>
+                        {booking.payoutStatus}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+                {dashboard && dashboard.recentBookings?.length === 0 && (
+                  <tr>
+                    <td colSpan="6" className={s.emptyTableCell}>
+                      No recent transactions.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+
+      {pendingWithdrawalAction && (
+        <div className={s.confirmModalOverlay}>
+          <div
+            className={s.confirmModal}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="withdrawal-confirm-title"
+          >
+            <div className={s.confirmModalIconRow}>
+              <span className={s.confirmModalIconWrap}>
+                <WithdrawalConfirmIcon className={s.confirmModalIcon} />
+              </span>
+              <span
+                className={`${s.withdrawalStatusBadge} ${getWithdrawalStatusClass(pendingWithdrawalAction.status)}`}
+              >
+                {pendingWithdrawalAction.status}
+              </span>
+            </div>
+            <h3 id="withdrawal-confirm-title" className={s.confirmModalTitle}>
+              Confirm withdrawal status
+            </h3>
+            <p className={s.confirmModalText}>
+              Are you sure you want to mark this withdrawal as{" "}
+              {formatStatusLabel(pendingWithdrawalAction.status)}?
+            </p>
+            <div className={s.confirmModalMeta}>
+              <span>
+                {pendingWithdrawal?.userId?.businessName ||
+                  pendingWithdrawal?.userId?.name ||
+                  "Provider"}
+              </span>
+              <strong>{formatMoney(pendingWithdrawal?.amount)}</strong>
+            </div>
+            <div className={s.confirmModalActions}>
+              <button
+                type="button"
+                onClick={closeWithdrawalConfirm}
+                disabled={isConfirmingWithdrawal}
+                className={s.confirmModalCancelBtn}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={changeWithdrawalStatus}
+                disabled={isConfirmingWithdrawal}
+                className={s.confirmModalConfirmBtn}
+              >
+                {isConfirmingWithdrawal
+                  ? "Confirming..."
+                  : `Confirm ${formatStatusLabel(pendingWithdrawalAction.status)}`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+       
 
     </div>
   )
