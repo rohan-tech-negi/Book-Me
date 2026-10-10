@@ -168,13 +168,20 @@ const adminDashboardPage = () => {
             <div className={s.headerInner}>
                 <div className={s.logoRow}>
                     <img src={} className={s.logoImg} alt="" />
-                    <Link to="/admin/dashboard" className={s.headerActions}>
-                    Client App
+                    <Link to="/admin/dashboard" className={s.logoText}>
+                    Book Me <span className={s.logoAccent}>Admin</span>
                     </Link> 
+                    
 
-                    <button type='button' onClick={logout} className={s.logoutButton}>Logout</button>
+                    </div>
+                    <div className={s.headerActions}>
+                      <Link to="/" className={s.clientAppLink}>Client App</Link>
+                      <button type='button' onClick={logout} className={s.logoutButton}>Logout</button>
+                    </div>
+
+                    
                 </div>
-            </div>
+            
        </header>
 
        <main className={s.main}>
@@ -193,7 +200,7 @@ const adminDashboardPage = () => {
             </section>
 
             <section className={s.statsGrid}>
-                {statCards.map((stat, i)=>{
+                {statCards.map((stat, i)=>(
                     <div key={i} className={s.statCard}>
                         <div className={`${s.statIconContainer} ${stat.bg} ${stat.c}`}>
                             <stat.icon className={s.statIcon}></stat.icon>
@@ -209,7 +216,7 @@ const adminDashboardPage = () => {
                             </h2>
                         </div>
                     </div>
-                })}
+                ))}
             </section>
 
             <section className={s.tablesGrid}>
