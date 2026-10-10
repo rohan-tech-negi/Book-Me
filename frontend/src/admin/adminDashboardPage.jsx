@@ -268,8 +268,19 @@ const adminDashboardPage = () => {
                         <Clock className={s.tableTitleIcon}>Withdrawl Requests</Clock>
                     </h2>
 
-                    <div className=''>
+                    <div className={s.withdrawalList}>
+                          {(dashboard?.withdrawal || []).map((withdrawal) =>{
+                            const isWithdrawlLocked = isTerminalWithdrawlStatus(
+                              withdrawal.status
+                            )
 
+
+                            return (
+                              <div key={withdrawal._id} className={s.withdrawalItem}>
+                                
+                              </div>
+                            )
+                          })}
                     </div>
                 </div>
             </section>
