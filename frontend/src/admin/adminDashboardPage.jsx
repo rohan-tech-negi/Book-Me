@@ -277,10 +277,64 @@ const adminDashboardPage = () => {
 
                             return (
                               <div key={withdrawal._id} className={s.withdrawalItem}>
+                                <div className={s.withdrawalProviderHeader}>
+                                    <div>
+                                      <p className={s.withdrawalProviderName}>
+                                        {withdrawal.userId?.businessName || withdrawal.userId.name}
+                                      </p>
+                                    </div>
+
+                                    <p className={s.withdrawalProviderEmail}>
+                                      {withdrawal.userId?.email}
+                                    </p>
                                 
+
+                                <div className={s.withdrawalAmountCol}>
+                                    <span className={s.withdrawalAmount}>
+                                        {formatMoney(withdrawal.amount)}
+                                    </span>
+                                    <div className={s.withdrawlStatuses}>
+                                        <span className={`${s.withdrawalStatusBadge} ${getWithdrawalStatusClass(withdrawal.status)}`}>
+                                            {withdrawal.status}
+                                        </span>
+                                    </div>
+                                </div>
+                              </div>
+
+                              <div className={s.withdrawalAccountIcon}>
+                                <LandMark className={s.withdrawalAccountIcon}>
+
+                                </LandMark>
+                                {withdrawal.payoutSnapshot?.bankName || "UPI Connection"}{" "}{" "}
+                                {withdrawal.payoutSnapshot?.accountLast4 ? `***** ${withdrawal.payoutSnapshot.accountLast4} ` : withdrawal.payoutSnapshot?.upiId}
+                              </div>
+
+                              <div className={s.withdrawalActions}>
+                                  {withdrawlStatuses.map((stats)=>{
+                                    const isCurrectStatus = withdrawal.status === status;
+                                    const isUpdatingThisWithdrawl = updatingWithdrawalId === withdrawal._id;
+
+                                    return (
+                                      <button key={status} type='button' onClick={()=> requestWithdrawlStatusChange(withdrawal, status)}
+                                      disabled={isUpdatingThisWithdrawl || isCurrectStatus || isWithdrawlLocked}
+                                      className={`${s.withdrawalActionBtn} ${isCurrectStatus ? s.withdrawalActionBtnActive : 
+                                      s.withdrawalActionBtnInactive}`}>
+
+                                        {isUpdatingThisWithdrawl && !isCurrectStatus ? "..." : formatStatusLabel(status)}
+
+                                      </button>
+                                    )
+                                  })}
+                              </div>
                               </div>
                             )
                           })}
+
+                          {dashboard && dashboard.withdrawals?.length === 0 && (
+                            <div>
+                              
+                            </div>
+                          )}
                     </div>
                 </div>
             </section>
