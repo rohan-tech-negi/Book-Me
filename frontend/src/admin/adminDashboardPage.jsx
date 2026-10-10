@@ -249,7 +249,7 @@ const adminDashboardPage = () => {
                               </td>
 
                               <td className={s.tdMuted}>{user.email}</td>
-                              <td className={s.tdMuted}>{user.slug}</td>
+                              <td className={s.tdMuted}>/book/{user.slug}</td>
                               <td className={s.td}>
                                 <span className={`${s.payoutStatusBadge} ${getPayoutStatusClass(user.payoutDetails?.isComplete)}`}>
                                     {user.payoutDetails?.isComplete ? "ready" : "pending details"}
