@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { getAdminDashboard, updateWithdrawlStatus } from '../api/admin'
 import {Users, Wallet, TrendingUp, IndianRuppe, LandMark, CheckCircle, XOctagon, Clock, UserCheck, ShieldCheck} from "lucide-react"
 import { adminDashboardPageStyles as s } from '../assests/dummy'
+import logo from '../assests/logo.png'
 
 const formatMoney = (amount = 0, currency = "INR") =>
     new Intl.NumberFormat("en-IN", {styles: "currency", currency}).format(
@@ -167,7 +168,7 @@ const adminDashboardPage = () => {
        <header className={s.header}>
             <div className={s.headerInner}>
                 <div className={s.logoRow}>
-                    <img src={} className={s.logoImg} alt="" />
+                    <img src={logo} className={s.logoImg} alt="BookMe Logo" />
                     <Link to="/admin/dashboard" className={s.logoText}>
                     Book Me <span className={s.logoAccent}>Admin</span>
                     </Link> 

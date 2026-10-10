@@ -18,7 +18,10 @@ const AdminProtectedRoute = ({children}) => {
 const App = () => {
 
   return (
-    <div>App</div>
+    <Routes>
+      <Route path="/admin/login" element={<adminLoginPage></adminLoginPage>}></Route>
+      <Route path="/admin/dashboard" element={<AdminProtectedRoute></AdminProtectedRoute>}></Route>
+    </Routes>
   )
 }
 

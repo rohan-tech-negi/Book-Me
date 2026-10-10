@@ -4,6 +4,7 @@ import {useNavigate} from "react-router-dom"
 import { adminLogin } from '../api/admin'
 // import { adminLoginPageStyles as s } from '../api/admin'
 import { adminDashboardPageStyles as s } from '../assests/dummy'
+import logo from '../assests/logo.png'
 
 
 const adminLoginPage = () => {
@@ -37,7 +38,7 @@ const adminLoginPage = () => {
             <div className={s.leftPanel}>
                 <p className={s.leftEyebrow}>System access</p>
                 <div className={s.leftLogoRow}>
-                    <img src={} className={s.leftLogoImg}/>
+                    <img src={logo} alt="BookMe Logo" className={s.leftLogoImg}/>
                 </div>
                 <h1 className={s.leftHeading}>
                     BookMe
