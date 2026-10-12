@@ -117,8 +117,38 @@ export default function AppLayout({children}) {
                     </div>
                 </div>
 
-                
+                {/* mobile navigation */}
+                {mobileMenuOpen && (
+                    <div className={s.mobileNavInner}>
+                        {navItems.map((item) =>(
+                            <NavLink 
+                            key={item.to}
+                            to={item.to}
+                            onClick={() => setMobileMenuOpen(false)}
+                            className={({isActive})=> isActive ? s.mobileNavLinkActive : s.mobileNavLinkInactive}
+                            >
+                                {item.label}
+
+                            </NavLink>
+                            
+                        ))}
+                    </div>
+                )}
             </header>
+            <main className={s.main}>
+                {children}
+                
+            </main>
+            <footer className={s.footerBrandSection}>
+                <div className={s.footerCard}>
+                    <div className={s.footerCardTop}>
+                        <div className={s.footerBrandMark}>
+
+                        </div>
+                    </div>
+
+                </div>
+            </footer>
         </div>
     )
 }
