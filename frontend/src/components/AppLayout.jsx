@@ -143,7 +143,16 @@ export default function AppLayout({children}) {
                 <div className={s.footerCard}>
                     <div className={s.footerCardTop}>
                         <div className={s.footerBrandMark}>
-
+                            <img src={logo} className={s.footerMiniLogo} alt="" />
+                            <span className={s.footerCopyright}>All rights reserved</span>
+                            <div className={s.footerLinks}>
+                                <Link to="/privacy" className={s.footerLink}>
+                                    Privacy Policy
+                                </Link>
+                                <span className={s.footerSeparator}>
+                                    .
+                                </span>
+                            </div>
                         </div>
                     </div>
 
