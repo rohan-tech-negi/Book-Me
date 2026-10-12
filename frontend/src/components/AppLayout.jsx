@@ -22,5 +22,32 @@ export default function AppLayout({children}) {
     const[dropDownOpen, setDropDownOpen] = useState(false)
     const dropDownRef = useRef(null)
 
-    useEffect
+    useEffect(()=>{
+        const handleClickOutside = (event) => {
+            if(dropDownRef.current && !dropDownRef.current.contains(event.target)){
+                setDropDownOpen(false)
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => document.removeEventListener('mousedown', handleClickOutside)
+    },[])
+
+    useEffect(()=>{
+        if(hasToken){
+            getMe().then(({data}) => setUser(data?.user)).catch(() => { })
+        }
+    }, [hasToken])
+
+    const logout = () =>{
+        localStorage.removeItem('token')
+        navigate('/login')
+    }
+
+    const displayName = user?.businessName || user?.name || "My Business"
+    const avatarInitial = displayName.slice(0,1).toUpperCase()
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+    return (
+        
+    )
 }
