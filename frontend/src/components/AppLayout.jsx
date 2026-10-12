@@ -1,6 +1,6 @@
 import logo from "../assets/logo.png"
 import {Link, NavLink, useNavigate} from 'react-router-dom'
-import {ChevronDown, LogOut, Menu, X} from 'lucide-react'
+import {ChevronDown, LogOut, Menu, SquareMenu, X} from 'lucide-react'
 import { useEffect, useState, useRef } from "react"
 import {getMe} from "../api/auth"
 import { appLayoutStyles as s } from '../assests/dummy'
@@ -48,6 +48,77 @@ export default function AppLayout({children}) {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
     return (
+        <div className={s.container}>
+            <header className={s.header}>
+                <div className={s.headerInner}>
+                    <Link to="/" className={s.loginLink}>
+                    <img src={logo} alt="" className={s.logoImg}/>
+                    <span className={s.logoText}>BookMe</span>
+                    </Link>
+
+                    {/* navigatuon desktop */}
+                    <nav className={s.navDesktop}>
+                        {navItems.map((item)=>{
+                            <NavLink 
+                            key={item.to}
+                            to={item.to}
+                            className={({isActive})=> isActive ? s.navLinkActive: s.navLinkInactive}>
+                                {item.label}
+                            </NavLink>
+                        })}
+
+                    </nav>
+
+                    {/* right section */}
+                    <div className={s.rightSection}>
+                        {hasToken ? (
+                            <div className={s.accountMenu} ref={dropDownRef}>
+                                <button type="button" onClick={() => setDropDownOpen(!dropDownOpen)} className={s.avatarCircle}>
+                                    <div className={s.avatarCircle}>
+                                        {avatarInitial}
+                                    </div>
+                                    <span className={s.displayName}>
+                                        {displayName}
+                                    </span>
+                                    <ChevronDown className={dropDownOpen ? `${s.chevron} ${s.chevronOpen}` : s.chevron}></ChevronDown>
+                                </button>
+                                {dropDownOpen && (
+                                    <div className={s.dropdown}>
+                                        <button onClick={()=>{
+                                            setDropDownOpen(flase)
+                                            logout()
+                                        }} className={s.logoutButton}>
+                                                <LogOut className={s.logoutIcon}></LogOut>
+                                                Log Out
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+
+                        ) : (
+                            <Link to="/login" className={s.logoLink}>
+                                Log in
+                            </Link>
+                        )}
+
+                        {/* mobile menu button */}
+
+                        <button type="button" className={s.mobileMenuButton} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                            <span className={s.srOnly}>
+                                Open main menu
+                            </span>
+                            {mobileMenuOpen ? (
+                                <X className={s.mobileMenuButton} aria-hidden="true"></X>
+                            ) : (
+                                <SquareMenu className={s.mobileMenuButton} aria-hidden="true"></SquareMenu>
+                            )}
+                        </button>
         
+                    </div>
+                </div>
+
+                
+            </header>
+        </div>
     )
 }
