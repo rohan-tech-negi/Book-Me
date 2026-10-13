@@ -119,8 +119,14 @@ export default function AuthPage() {
             }
             navigate(redirectTo, {replace: true})
         } catch (error) {
-            
+            setMessage(error.response?.data?.message || "Authentication failed")
+        } finally {
+            setLoading(false)
         }
     }
+
+    return (
+        
+    )
 
 }
