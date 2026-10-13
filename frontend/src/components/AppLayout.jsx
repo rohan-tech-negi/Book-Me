@@ -152,6 +152,7 @@ export default function AppLayout({children}) {
                                 <span className={s.footerSeparator}>
                                     .
                                 </span>
+                                <Link to="/terms" className={s.footerLink}>Terms of Services</Link>
                             </div>
                         </div>
                     </div>
