@@ -131,6 +131,36 @@ export default function AuthPage() {
 
 
                 {/* left branding */}
+                <section className={s.brandSection}>
+                    <div className={s.logoRow}>
+                        <img src={logo} alt="" className={s.logoImg}/>
+                        <span className={s.brandName}>
+                            BookMe
+                        </span>
+                    </div>
+
+                    <h1 className={s.mainHeading}>
+                        A calm booking desk for {" "}
+                        <span className={s.gradientText}>   
+                            snall business
+                        </span>
+                    </h1>
+                    <p className={s.subtitle}>
+                        Create your business profile , add services, set availability, and share one blean booking link
+                    </p>
+
+                    <div className={s.featureGrid}>
+                        <div className={s.featureCard}>
+                            <div className={s.featureIconWrapPurple}>
+                                <CalenderDays className={s.featureIconPurple}></CalenderDays>
+                            </div>
+                            <div>
+                                <p className={s.featureTitle}>Easy setup</p>
+                                <p className={s.featureCard}>Get started in minutes</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
         </div>
     )
