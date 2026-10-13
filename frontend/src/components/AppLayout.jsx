@@ -163,10 +163,8 @@ export default function AppLayout({children}) {
                                 <Link to="/terms" className={s.footerLink}>Terms of Services</Link>
                             </div>
                                 </div>
-                            </div>
-                           
-                        
-                        <div className={s.footerCreditWrapper}>
+
+                                <div className={s.footerCreditWrapper}>
                             <a href="https://hexagondigitalservices.com"
                             target="_blank"
                             ref="noreferrer"
@@ -177,6 +175,10 @@ export default function AppLayout({children}) {
                                 </span>
                             </a>
                         </div>
+                            </div>
+                           
+                        
+                        
                    
 
                 </div>
