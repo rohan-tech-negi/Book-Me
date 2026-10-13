@@ -126,7 +126,13 @@ export default function AuthPage() {
     }
 
     return (
-        
+        <div className={s.pageBg}>
+            <div className={s.gridContainer}>
+
+
+                {/* left branding */}
+            </div>
+        </div>
     )
 
 }
