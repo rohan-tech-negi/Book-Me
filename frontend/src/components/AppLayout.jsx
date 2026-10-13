@@ -51,7 +51,7 @@ export default function AppLayout({children}) {
         <div className={s.container}>
             <header className={s.header}>
                 <div className={s.headerInner}>
-                    <Link to="/" className={s.loginLink}>
+                    <Link to="/" className={s.logoLink}>
                     <img src={logo} alt="" className={s.logoImg}/>
                     <span className={s.logoText}>BookMe</span>
                     </Link>
@@ -85,7 +85,7 @@ export default function AppLayout({children}) {
                                 {dropDownOpen && (
                                     <div className={s.dropdown}>
                                         <button onClick={()=>{
-                                            setDropDownOpen(flase)
+                                            setDropDownOpen(false)
                                             logout()
                                         }} className={s.logoutButton}>
                                                 <LogOut className={s.logoutIcon}></LogOut>
@@ -96,7 +96,7 @@ export default function AppLayout({children}) {
                             </div>
 
                         ) : (
-                            <Link to="/login" className={s.logoLink}>
+                            <Link to="/login" className={s.loginLink}>
                                 Log in
                             </Link>
                         )}
@@ -108,9 +108,9 @@ export default function AppLayout({children}) {
                                 Open main menu
                             </span>
                             {mobileMenuOpen ? (
-                                <X className={s.mobileMenuButton} aria-hidden="true"></X>
+                                <X className={s.mobileMenuIcon} aria-hidden="true"></X>
                             ) : (
-                                <SquareMenu className={s.mobileMenuButton} aria-hidden="true"></SquareMenu>
+                                <SquareMenu className={s.mobileMenuIcon} aria-hidden="true"></SquareMenu>
                             )}
                         </button>
         
@@ -143,8 +143,16 @@ export default function AppLayout({children}) {
                 <div className={s.footerCard}>
                     <div className={s.footerCardTop}>
                         <div className={s.footerBrandMark}>
+                             </div>
                             <img src={logo} className={s.footerMiniLogo} alt="" />
-                            <span className={s.footerCopyright}>All rights reserved</span>
+                            <span className={s.footerBrandName}>BookMe</span>
+                            </div>
+                            <div className={s.footerRule}>
+
+                            </div>
+                            <div>
+                                <div>
+ <span className={s.footerCopyright}>All rights reserved</span>
                             <div className={s.footerLinks}>
                                 <Link to="/privacy" className={s.footerLink}>
                                     Privacy Policy
@@ -154,9 +162,28 @@ export default function AppLayout({children}) {
                                 </span>
                                 <Link to="/terms" className={s.footerLink}>Terms of Services</Link>
                             </div>
+                                </div>
+                            </div>
+                           
+                        
+                        <div className={s.footerCreditWrapper}>
+                            <a href="https://hexagondigitalservices.com"
+                            target="_blank"
+                            ref="noreferrer"
+                            className={s.footerCreditLink}>
+                                <img  alt="" className={s.footerCreditLogo}/>
+                                <span className={s.footerCreditText}>
+                                    <span className={s.footerCreditName}>Hexadon digital services</span>
+                                </span>
+                            </a>
                         </div>
-                    </div>
+                   
 
+                </div>
+                <div className={s.footerWatermarkWrapper}>
+                        <div className={s.footerLogoWatermark}>
+                                BookMe
+                        </div>
                 </div>
             </footer>
         </div>
