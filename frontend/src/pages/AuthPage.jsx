@@ -4,3 +4,15 @@ import {login, register, requestRegistrationOtp, verifyRegistrationOtp} from "..
 import logo from "../assets/logo.png"
 import {User, Mail, Lock, Building2, ArrowRight,CalenderDays, Shield, Zap, BadgeCheck} from "lucide-react"
 import {authPageStyles as s} from "../assests/dummy"   
+
+const initialForm = {
+    name: "",
+    email: "",
+    password: "",
+    businessName: "",
+    emailOtp: ""
+}
+
+export default function AuthPage() {
+    
+}
