@@ -159,6 +159,28 @@ export default function AuthPage() {
                                 <p className={s.featureCard}>Get started in minutes</p>
                             </div>
                         </div>
+
+
+                        <div className={s.featureCard}>
+                            <div className={s.featureIconWrapEmerald}>
+                                <Shield className={s.featureIconEmerald}></Shield>
+                            </div>
+                            <div>
+                                <p className={s.featureTitle}>Secure</p>
+                                <p className={s.featureCard}>Stripe-powered payments</p>
+                            </div>
+                        </div>
+
+
+                        <div className={s.featureCard}>
+                            <div className={s.featureIconWrapAmber}>
+                                <Zap className={s.featureIconAmber}></Zap>
+                            </div>
+                            <div>
+                                <p className={s.featureTitle}>Fast</p>
+                                <p className={s.featureCard}>Instant booking links</p>
+                            </div>
+                        </div>
                     </div>
                 </section>
             </div>
