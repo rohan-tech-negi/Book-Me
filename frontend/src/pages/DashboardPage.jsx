@@ -370,3 +370,750 @@ const StatusPanel = ({ confirmed, rescheduled, cancelled }) => {
     </div>
   );
 };
+
+export default function DashboardPage() {
+  const [user, setUser] = useState(null);
+  const [services, setServices] = useState([]);
+  const [bookings, setBookings] = useState([]);
+  const [wallet, setWallet] = useState(null);
+  const [copyMessage, setCopyMessage] = useState("");
+  const [graphFilter, setGraphFilter] = useState("daily");
+
+  useEffect(() => {
+    const loadDashboard = async () => {
+      if (!localStorage.getItem("token")) return;
+      const [meResponse, servicesResponse, bookingsResponse, paymentsResponse] =
+        await Promise.all([
+          getMe(),
+          listServices(),
+          listBookings(),
+          getPaymentOverview(),
+        ]);
+      setUser(meResponse.data.user);
+      setServices(servicesResponse.data.services || []);
+      setBookings(bookingsResponse.data.bookings || []);
+      setWallet(paymentsResponse.data.wallet || null);
+    };
+    loadDashboard().catch(() => {});
+  }, []);
+
+  const publicLink = user?.slug
+    ? `${window.location.origin}/book/${user.slug}`
+    : "";
+  const confirmedBookings = bookings.filter(
+    (booking) => booking.status === "confirmed",
+  );
+  const rescheduledBookings = bookings.filter(
+    (booking) => booking.isRescheduled,
+  );
+  const cancelledBookings = bookings.filter(
+    (booking) =>
+      booking.status === "cancelled" || booking.status === "payment_failed",
+  );
+  const paidBookings = bookings.filter(
+    (booking) => booking.paymentStatus === "paid",
+  );
+
+  const monthlyEarningsTrend = useMemo(() => {
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+    const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+    const prevYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+
+    const currentEarnings = paidBookings
+      .filter((b) => {
+        const d = getBookingDate(b, today);
+        return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+      })
+      .reduce((sum, b) => sum + (b.providerPayoutAmount || b.amount || 0), 0);
+
+    const prevEarnings = paidBookings
+      .filter((b) => {
+        const d = getBookingDate(b, today);
+        return d.getMonth() === prevMonth && d.getFullYear() === prevYear;
+      })
+      .reduce((sum, b) => sum + (b.providerPayoutAmount || b.amount || 0), 0);
+
+    if (prevEarnings === 0) return currentEarnings > 0 ? 100 : 0;
+    return ((currentEarnings - prevEarnings) / prevEarnings) * 100;
+  }, [paidBookings]);
+
+  const bookingTrend = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (graphFilter === "daily") {
+      const year = today.getFullYear();
+      const month = today.getMonth();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      return Array.from({ length: daysInMonth }, (_, i) => {
+        const d = new Date(year, month, i + 1);
+        const dateStr = formatLocalDateKey(d);
+        return {
+          label: dateStr,
+          short: `${i + 1}`,
+          value: bookings.filter((b) => {
+            const bd = getBookingDate(b, today);
+            return (
+              bd.getFullYear() === year &&
+              bd.getMonth() === month &&
+              bd.getDate() === i + 1
+            );
+          }).length,
+        };
+      });
+    } else if (graphFilter === "weekly") {
+      const year = today.getFullYear();
+      const month = today.getMonth();
+      const weeks = [];
+      let currentWeekStart = new Date(year, month, 1);
+      let weekNum = 1;
+
+      while (currentWeekStart.getMonth() === month) {
+        const currentWeekEnd = new Date(currentWeekStart);
+        currentWeekEnd.setDate(currentWeekEnd.getDate() + 7);
+        weeks.push({
+          start: new Date(currentWeekStart),
+          end: new Date(currentWeekEnd),
+          weekNum: weekNum++,
+        });
+        currentWeekStart = new Date(currentWeekEnd);
+      }
+
+      return weeks.map((w) => {
+        return {
+          label: `Week ${w.weekNum}`,
+          short: `W${w.weekNum}`,
+          value: bookings.filter((b) => {
+            const bd = getBookingDate(b, today);
+            return bd >= w.start && bd < w.end;
+          }).length,
+        };
+      });
+    } else if (graphFilter === "monthly") {
+      const year = today.getFullYear();
+      return Array.from({ length: 12 }, (_, i) => {
+        const d = new Date(year, i, 1);
+        return {
+          label: d.toLocaleDateString("en-US", { month: "long" }),
+          short: d.toLocaleDateString("en-US", { month: "short" }),
+          value: bookings.filter((b) => {
+            const bd = getBookingDate(b, today);
+            return bd.getMonth() === i && bd.getFullYear() === year;
+          }).length,
+        };
+      });
+    } else if (graphFilter === "yearly") {
+      return Array.from({ length: 5 }, (_, i) => {
+        const y = today.getFullYear() - (4 - i);
+        return {
+          label: `${y}`,
+          short: `${y}`,
+          value: bookings.filter(
+            (b) => getBookingDate(b, today).getFullYear() === y,
+          ).length,
+        };
+      });
+    }
+    return [];
+  }, [bookings, graphFilter]);
+
+  const earningTrend = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const getEarnings = (filteredBookings) => {
+      return (
+        filteredBookings.reduce(
+          (sum, b) => sum + (b.providerPayoutAmount || b.amount || 0),
+          0,
+        ) / 100
+      );
+    };
+
+    if (graphFilter === "daily") {
+      const year = today.getFullYear();
+      const month = today.getMonth();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      return Array.from({ length: daysInMonth }, (_, i) => {
+        const d = new Date(year, month, i + 1);
+        const dateStr = formatLocalDateKey(d);
+        return {
+          label: dateStr,
+          short: `${i + 1}`,
+          value: getEarnings(
+            paidBookings.filter((b) => {
+              const bd = getBookingDate(b, today);
+              return (
+                bd.getFullYear() === year &&
+                bd.getMonth() === month &&
+                bd.getDate() === i + 1
+              );
+            }),
+          ),
+        };
+      });
+    } else if (graphFilter === "weekly") {
+      const year = today.getFullYear();
+      const month = today.getMonth();
+      const weeks = [];
+      let currentWeekStart = new Date(year, month, 1);
+      let weekNum = 1;
+
+      while (currentWeekStart.getMonth() === month) {
+        const currentWeekEnd = new Date(currentWeekStart);
+        currentWeekEnd.setDate(currentWeekEnd.getDate() + 7);
+        weeks.push({
+          start: new Date(currentWeekStart),
+          end: new Date(currentWeekEnd),
+          weekNum: weekNum++,
+        });
+        currentWeekStart = new Date(currentWeekEnd);
+      }
+
+      return weeks.map((w) => {
+        return {
+          label: `Week ${w.weekNum}`,
+          short: `W${w.weekNum}`,
+          value: getEarnings(
+            paidBookings.filter((b) => {
+              const bd = getBookingDate(b, today);
+              return bd >= w.start && bd < w.end;
+            }),
+          ),
+        };
+      });
+    } else if (graphFilter === "monthly") {
+      const year = today.getFullYear();
+      return Array.from({ length: 12 }, (_, i) => {
+        const d = new Date(year, i, 1);
+        return {
+          label: d.toLocaleDateString("en-US", { month: "long" }),
+          short: d.toLocaleDateString("en-US", { month: "short" }),
+          value: getEarnings(
+            paidBookings.filter((b) => {
+              const bd = getBookingDate(b, today);
+              return bd.getMonth() === i && bd.getFullYear() === year;
+            }),
+          ),
+        };
+      });
+    } else if (graphFilter === "yearly") {
+      return Array.from({ length: 5 }, (_, i) => {
+        const y = today.getFullYear() - (4 - i);
+        return {
+          label: `${y}`,
+          short: `${y}`,
+          value: getEarnings(
+            paidBookings.filter(
+              (b) => getBookingDate(b, today).getFullYear() === y,
+            ),
+          ),
+        };
+      });
+    }
+    return [];
+  }, [paidBookings, graphFilter]);
+
+  const topServices = useMemo(() => {
+    return services
+      .map((service) => ({
+        ...service,
+        bookingCount: bookings.filter(
+          (booking) =>
+            booking.serviceId?._id === service._id ||
+            booking.service?._id === service._id,
+        ).length,
+      }))
+      .sort((a, b) => b.bookingCount - a.bookingCount)
+      .slice(0, 4);
+  }, [services, bookings]);
+
+  const upcomingBookings = useMemo(() => {
+    const now = new Date();
+    return bookings
+      .map((booking) => ({
+        ...booking,
+        displayDate: getBookingDate(booking, now),
+      }))
+      .filter((b) => {
+        return (
+          b.displayDate >= now &&
+          b.status !== "cancelled" &&
+          b.status !== "payment_failed"
+        );
+      })
+      .sort((a, b) => a.displayDate - b.displayDate)
+      .slice(0, 3);
+  }, [bookings]);
+
+  const copyPublicLink = async () => {
+    if (!publicLink) return;
+    await navigator.clipboard.writeText(publicLink);
+    setCopyMessage("Copied");
+    window.setTimeout(() => setCopyMessage(""), 1800);
+  };
+
+  return (
+    <AppLayout>
+      <div className={s.mainContainer}>
+        {/* Header Section */}
+        <header>
+          <h1 className={s.headerTitle}>
+            {user ? (
+              <>
+                Welcome Back,{" "}
+                <span className={s.gradientText}>
+                  {user.businessName || user.name}
+                </span>{" "}
+                <span className="ml-2">👋</span>
+              </>
+            ) : (
+              "Good morning 👋"
+            )}
+          </h1>
+          <p className={s.headerSubtitle}>
+            Here's what's happening with your business today.
+          </p>
+          <div className={s.headerButtonsContainer}>
+            <Link to="/services" className={s.headerButton}>
+              Add services
+            </Link>
+            <Link to="/availability" className={s.headerButton}>
+              Set availability
+            </Link>
+            <Link to="/payments" className={s.headerButton}>
+              Payment details
+            </Link>
+          </div>
+        </header>
+
+        {/* Hero Cards */}
+        <div className={s.heroGrid}>
+          <div className={s.heroCard}>
+            <div className={s.heroContent}>
+              <h2 className={s.heroTitle}>
+                Grow your practice.
+                <br />
+                Impact more lives.
+              </h2>
+              {publicLink ? (
+                <a
+                  href={publicLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={s.heroButton}
+                >
+                  View booking page <ArrowRight className={s.arrowIcon} />
+                </a>
+              ) : (
+                <Link to="/profile" className={s.heroButton}>
+                  Setup booking page <ArrowRight className={s.arrowIcon} />
+                </Link>
+              )}
+            </div>
+            <div className={s.heroImageWrapper}>
+              <img src={p1Image} alt="Hero" className={s.heroImage} />
+            </div>
+          </div>
+
+          <div className={s.publicLinkCard}>
+            <h3 className={s.publicLinkTitle}>Public booking link</h3>
+            <div className={s.publicLinkInputContainer}>
+              <span className={s.publicLinkText}>
+                {publicLink || "Save profile to generate..."}
+              </span>
+              {publicLink && (
+                <button
+                  onClick={copyPublicLink}
+                  className={s.copyButton}
+                  aria-label={copyMessage || "Copy booking link"}
+                >
+                  <Copy className={s.copyIcon} />
+                </button>
+              )}
+            </div>
+            <p className={s.publicLinkHelper}>
+              Share your link and start getting
+              <br />
+              bookings instantly.
+            </p>
+
+            <h4 className={s.shareTitle}>Share your link</h4>
+            <div className={s.socialIconsContainer}>
+              <a
+                href={`https://wa.me/?text=${encodeURIComponent("Book a session with me: " + publicLink)}`}
+                target="_blank"
+                rel="noreferrer"
+                className={s.socialIconLink}
+              >
+                <img
+                  src={whatsappLogo}
+                  alt="WhatsApp"
+                  className={s.socialIconImgWhatsapp}
+                />
+              </a>
+              <a
+                href={`https://www.instagram.com/`}
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => copyPublicLink()}
+                title="Link copied to clipboard for Instagram bio"
+                className={s.socialIconLinkInstagram}
+              >
+                <img
+                  src={instaLogo}
+                  alt="Instagram"
+                  className={s.socialIconImgInstagram}
+                />
+              </a>
+              <a
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(publicLink)}`}
+                target="_blank"
+                rel="noreferrer"
+                className={s.socialIconLinkInstagram}
+              >
+                <img
+                  src={facebookLogo}
+                  alt="Facebook"
+                  className={s.socialIconImgFacebook}
+                />
+              </a>
+              <a
+                href={buildGmailShareUrl(publicLink)}
+                target="_blank"
+                rel="noreferrer"
+                className={s.socialIconLinkInstagram}
+              >
+                <img
+                  src={gmailLogo}
+                  alt="Gmail"
+                  className={s.socialIconImgGmail}
+                />
+              </a>
+              <button onClick={copyPublicLink} className={s.copySocialButton}>
+                <Copy className={s.copyIcon} />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* 4 Stats Cards */}
+        <div className={s.statsGrid}>
+          {[
+            {
+              label: "Total Bookings",
+              value: bookings.length,
+              icon: Calendar,
+              icfg: "text-[#7D57F5]",
+              ibg: "bg-[#F4F0FF]",
+            },
+            {
+              label: "Confirmed",
+              value: confirmedBookings.length,
+              icon: CheckCircle,
+              icfg: "text-[#16a34a]",
+              ibg: "bg-[#eafbef]",
+            },
+            {
+              label: "Rescheduled",
+              value: rescheduledBookings.length,
+              icon: RefreshCcw,
+              icfg: "text-[#ea580c]",
+              ibg: "bg-[#ffedd5]",
+            },
+            {
+              label: "Total Income",
+              value: formatMoney(
+                paidBookings.reduce(
+                  (s, b) => s + (b.providerPayoutAmount || 0),
+                  0,
+                ),
+              ),
+              icon: Wallet,
+              icfg: "text-[#16a34a]",
+              ibg: "bg-[#eafbef]",
+            },
+          ].map((stat, i) => (
+            <div key={i} className={s.statCard}>
+              <div className={`${s.statIconWrapper} ${stat.ibg} ${stat.icfg}`}>
+                <stat.icon className="w-[22px] h-[22px]" />
+              </div>
+              <div>
+                <p className={s.statLabel}>{stat.label}</p>
+                <h2 className={s.statValue}>{stat.value}</h2>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Charts Section */}
+        <section className={s.chartsGrid}>
+          <div className={s.chartCard}>
+            <div className={s.chartHeader}>
+              <h3 className={s.chartTitle}>Booking Overview</h3>
+              <select
+                value={graphFilter}
+                onChange={(e) => setGraphFilter(e.target.value)}
+                className={s.chartSelect}
+              >
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
+              </select>
+            </div>
+            <div className={s.chartOverflow}>
+              <div className={s.chartInnerWrapper}>
+                <LineChart data={bookingTrend} accent="#7D57F5" />
+              </div>
+            </div>
+          </div>
+
+          <div className={s.chartCard}>
+            <h3 className={s.chartTitle}>Bookings by Status</h3>
+            <div className={s.statusPanelContainer}>
+              <StatusPanel
+                confirmed={confirmedBookings.length}
+                rescheduled={rescheduledBookings.length}
+                cancelled={cancelledBookings.length}
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Bottom Section: Top Services & Earnings Overview */}
+        <section className={s.bottomGrid}>
+          {/* Top Services */}
+          <div className={s.topServicesCard}>
+            <div className={s.servicesHeader}>
+              <h3 className={s.chartTitle}>Top Services</h3>
+              <Link to="/services" className={s.viewAllLink}>
+                View all
+              </Link>
+            </div>
+            <div className={s.servicesList}>
+              {topServices.map((service, index) => {
+                const max = Math.max(
+                  1,
+                  ...topServices.map((i) => i.bookingCount),
+                );
+                const pct = ((service.bookingCount / max) * 100).toFixed(0);
+                const truePct = (
+                  (service.bookingCount / Math.max(1, bookings.length)) *
+                  100
+                ).toFixed(0);
+                const barColors = [
+                  "bg-[#7c3aed]",
+                  "bg-[#2563eb]",
+                  "bg-[#16a34a]",
+                  "bg-[#ea580c]",
+                ];
+                const barColor = barColors[index % barColors.length];
+
+                return (
+                  <div
+                    key={service._id}
+                    className="flex items-center mb-6 last:mb-0"
+                  >
+                    <div className={`${s.serviceIconBox} mr-4`}>
+                      <img
+                        src={ICON_MAP[service.icon || "C1.png"]}
+                        alt={service.name}
+                        className={s.serviceIconImg}
+                      />
+                    </div>
+                    <div className="flex-1 pr-6">
+                      <p className="text-[14px] font-semibold text-slate-800 leading-tight">
+                        {service.name}
+                      </p>
+                      <p className="text-[12px] font-medium text-slate-500 mt-1 mb-2.5">
+                        {service.bookingCount} bookings
+                      </p>
+                      <div className="w-full h-[4px] bg-slate-50 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full ${barColor}`}
+                          style={{
+                            width: `${pct}%`,
+                            transition: "width 1s ease-out",
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+                    <span className="text-[13px] font-semibold text-slate-600 text-right min-w-[36px]">
+                      {truePct}%
+                    </span>
+                  </div>
+                );
+              })}
+              {topServices.length === 0 && (
+                <p className="text-[13px] font-medium text-slate-500 text-center pt-10">
+                  Add services to start tracking demand.
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Earnings Overview with BAR CHART */}
+          <div className={s.earningsCard}>
+            <div className={s.earningsHeader}>
+              <h3 className={s.chartTitle}>Earnings Overview</h3>
+              <select
+                value={graphFilter}
+                onChange={(e) => setGraphFilter(e.target.value)}
+                className={s.earningsSelect}
+              >
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
+              </select>
+            </div>
+            <div className={s.earningsAmountRow}>
+              <h2 className={s.earningsAmount}>
+                {formatMoney(wallet?.available || 0)}
+              </h2>
+              <div className={s.earningsTrendContainer}>
+                <span
+                  className={
+                    monthlyEarningsTrend >= 0
+                      ? s.earningsTrendUp
+                      : s.earningsTrendDown
+                  }
+                >
+                  <ArrowRight
+                    className={`${s.trendArrow} ${monthlyEarningsTrend >= 0 ? "-rotate-45" : "rotate-45"} mr-1`}
+                  />
+                  {Math.abs(monthlyEarningsTrend).toFixed(1)}%
+                </span>
+                <span className={s.trendLabel}>from last month</span>
+              </div>
+            </div>
+            <div className={s.chartOverflow}>
+              <div className={s.chartInnerWrapper}>
+                <BarChart data={earningTrend} accent="#7c3aed" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Upcoming Bookings & Integrations */}
+        <section className={s.bottomGrid}>
+          <div className={s.upcomingCard}>
+            <div className={s.upcomingHeader}>
+              <h3 className={s.chartTitle}>Upcoming Bookings</h3>
+              <Link to="/bookings" className={s.viewAllLink}>
+                View all
+              </Link>
+            </div>
+            <div className={s.upcomingList}>
+              {upcomingBookings.map((booking) => {
+                const isConfirmed = booking.status === "confirmed";
+                const badgeColors = isConfirmed
+                  ? s.badgeConfirmed
+                  : s.badgePending;
+                const date = booking.displayDate;
+                return (
+                  <div key={booking._id} className={s.bookingRow}>
+                    <div className={s.bookingLeft}>
+                      <div className={s.avatarBox}>
+                        <img
+                          src={AVATAR_MAP[booking.customerAvatar || "A1.png"]}
+                          alt={booking.customerName}
+                          className={s.avatarImg}
+                        />
+                      </div>
+                      <div>
+                        <p className={s.bookingCustomerName}>
+                          {booking.customerName || "Guest"}
+                        </p>
+                        <p className={s.bookingServiceName}>
+                          {booking.service?.name || "Service"}
+                        </p>
+                      </div>
+                    </div>
+                    <div className={s.bookingRight}>
+                      <div className={s.bookingDateTimeWrapper}>
+                        <div className={s.bookingDate}>
+                          <Calendar className={s.calendarIconSmall} />{" "}
+                          {date.toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </div>
+                        <div className={s.bookingTime}>
+                          <Clock className={s.clockIconSmall} />{" "}
+                          {booking.startTime && booking.endTime
+                            ? `${booking.startTime} - ${booking.endTime}`
+                            : date.toLocaleTimeString("en-US", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                        </div>
+                      </div>
+                      <span className={`${s.bookingBadgeBase} ${badgeColors}`}>
+                        {isConfirmed ? "Confirmed" : "Pending"}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+              {upcomingBookings.length === 0 && (
+                <p className="text-[13px] font-medium text-slate-500 text-center pt-8">
+                  No upcoming bookings.
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div className={s.integrationsCard}>
+            <h3 className={s.integrationsTitle}>Integrations</h3>
+            <div className={s.integrationsList}>
+              <div className={s.integrationItem}>
+                <div className={s.integrationIconBox}>
+                  <img
+                    src={googleCalendarLogo}
+                    alt="Google Calendar"
+                    className={s.integrationIconImgDefault}
+                  />
+                </div>
+                <div>
+                  <p className={s.integrationName}>Google Calendar</p>
+                  <div className={s.integrationStatus}>
+                    <CheckCircle className={s.checkIcon} />{" "}
+                    <span className={s.statusText}>Connected</span>
+                  </div>
+                </div>
+              </div>
+              <div className={s.integrationItem}>
+                <div className={s.integrationIconBox}>
+                  <img
+                    src={gmailLogo}
+                    alt="Gmail"
+                    className={s.integrationIconImgGmail}
+                  />
+                </div>
+                <div>
+                  <p className={s.integrationName}>Gmail</p>
+                  <div className={s.integrationStatus}>
+                    <CheckCircle className={s.checkIconSmall} />{" "}
+                    <span className={s.statusTextSmall}>Connected</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className={s.integrationsImageWrapper}>
+              <img
+                src={p5Image}
+                alt="Integration visual"
+                className={s.integrationsImage}
+              />
+            </div>
+          </div>
+        </section>
+      </div>
+    </AppLayout>
+  );
+}
