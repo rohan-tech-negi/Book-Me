@@ -26,8 +26,8 @@ export default function AuthPage() {
     const [otpCooldown, setOtpCooldown] = useState(0)
 
     const isRegister = mode === "register"
-    const formLocation = location.state?.form;
-    const redirectTo  = formLocation ? `${formLocation.pathname}${formLocation.search | ""}` : "/profile"
+    const fromLocation = location.state?.form;
+    const redirectTo  = fromLocation ? `${fromLocation.pathname}${fromLocation.search | ""}` : "/profile"
 
     useState(()=> {
         if(otpCooldown <= 0) return ;
@@ -332,6 +332,7 @@ export default function AuthPage() {
             </div>
             <div className={s.footerLink}>
                 <Link to="/privacy" className={s.footerLink}>Privacy Policy</Link>
+                <Link to="/terms" className={s.footerLink}>terms of services</Link>
             </div>
         </div>
     )
