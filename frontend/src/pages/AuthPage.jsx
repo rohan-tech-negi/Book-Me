@@ -330,6 +330,9 @@ export default function AuthPage() {
           </button>
         </section>
             </div>
+            <div className={s.footerLink}>
+                <Link to="/privacy" className={s.footerLink}>Privacy Policy</Link>
+            </div>
         </div>
     )
 
