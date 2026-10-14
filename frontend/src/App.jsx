@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom"
 import AdminDashboardPage from "./admin/adminDashboardPage"
 import AdminLoginPage from "./admin/adminLoginPage"
+import AuthPage from "./pages/AuthPage"
 
 const AdminProtectedRoute = ({ children }) => {
   const hasAdminToken = Boolean(localStorage.getItem('adminToken'))
@@ -9,6 +10,18 @@ const AdminProtectedRoute = ({ children }) => {
     return <Navigate to="/admin/login" replace />
   }
 
+  return children
+}
+
+
+const publicOnlyRoute = ({children}) => {
+  const hasToken = Boolean(localStorage.getItem("token"))
+
+  if(hasToken){
+    return(
+      <Navigate to="/" replace></Navigate>
+    )
+  }
   return children
 }
 
