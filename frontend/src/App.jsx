@@ -14,7 +14,7 @@ const AdminProtectedRoute = ({ children }) => {
 }
 
 
-const publicOnlyRoute = ({children}) => {
+const PublicOnlyRoute = ({children}) => {
   const hasToken = Boolean(localStorage.getItem("token"))
 
   if(hasToken){
@@ -28,6 +28,7 @@ const publicOnlyRoute = ({children}) => {
 const App = () => {
   return (
     <Routes>
+      <Route path="/login" element={<PublicOnlyRoute><AuthPage></AuthPage></PublicOnlyRoute>}></Route>
       <Route path="/admin/login" element={<AdminLoginPage />} />
       <Route
         path="/admin/dashboard"
