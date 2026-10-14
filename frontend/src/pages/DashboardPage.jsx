@@ -306,3 +306,67 @@ const LineChart = ({ data, accent = "#7D57F5" }) => {
     </div>
   );
 };
+
+
+
+const StatusPanel = ({ confirmed, rescheduled, cancelled }) => {
+  const trueTotal = confirmed + rescheduled + cancelled;
+  const denominator = Math.max(1, trueTotal);
+  const confPct = (confirmed / denominator) * 100;
+  const reschPct = (rescheduled / denominator) * 100;
+
+  return (
+    <div className={s.statusPanelContainerFlex}>
+      <div
+        className={s.statusDonutWrapper}
+        style={{
+          background:
+            trueTotal === 0
+              ? "#f1f5f9"
+              : `conic-gradient(#7D57F5 0% ${confPct}%, #fb923c ${confPct}% ${confPct + reschPct}%, #ef4444 ${confPct + reschPct}% 100%)`,
+        }}
+      >
+        <div className={s.statusDonutInner}>
+          <span className={s.statusTotalNumber}>{trueTotal}</span>
+          <span className={s.statusTotalLabel}>Total</span>
+        </div>
+      </div>
+
+      <div className={s.statusLegendList}>
+        {[
+          {
+            label: "Confirmed",
+            value: confirmed,
+            pct: confPct,
+            color: "bg-gradient-to-b from-[#CBB8FF] via-[#9B7BFF] to-[#7D57F5]",
+          },
+          {
+            label: "Rescheduled",
+            value: rescheduled,
+            pct: reschPct,
+            color: "bg-[#fb923c]",
+          },
+          {
+            label: "Cancelled",
+            value: cancelled,
+            pct: (cancelled / denominator) * 100,
+            color: "bg-[#ef4444]",
+          },
+        ].map((item) => (
+          <div key={item.label} className={s.statusLegendItem}>
+            <div className={s.statusLegendLeft}>
+              <span className={`${s.statusColorSwatch} ${item.color}`}></span>
+              <span className={s.statusLegendLabel}>{item.label}</span>
+            </div>
+            <div className={s.statusLegendRight}>
+              <span className={s.statusLegendValue}>{item.value}</span>
+              <span className={s.statusLegendPercent}>
+                {item.pct.toFixed(1)}%
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
