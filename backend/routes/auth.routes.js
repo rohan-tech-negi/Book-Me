@@ -8,7 +8,9 @@ const router = express.Router();
 
 router.post('/register', registerUser);
 router.post('/register/request-otp', requestRegistrationOTP);
+router.post('/request-otp', requestRegistrationOTP);
 router.post('/register/verify-otp', verifyRegistrationOtp);
+router.post('/verify-otp', verifyRegistrationOtp);
 router.post('/login', loginUser);
 router.get('/me', auth, getMe);
 router.post('/me', auth, getMe);

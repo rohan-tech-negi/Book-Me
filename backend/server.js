@@ -26,11 +26,15 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use('/api/services', serviceRoutes);
+app.use('/api/service', serviceRoutes);
 app.use("/api/availibility", availibilityRoutes);
 app.use("/api/availability", availibilityRoutes);
 app.use('/api/integrations', integrationRoutes);
+app.use('/api/integration', integrationRoutes);
 app.use('/api/payment', paymentRoutes);
+app.use('/api/payments', paymentRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/api/booking', bookingRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/public', publicRoutes);
 app.use('/api/public', publicRoutes);

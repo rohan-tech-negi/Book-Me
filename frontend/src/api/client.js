@@ -17,7 +17,7 @@ client.interceptors.request.use((config) => {
 
 
 const presistTokenFromResponse = (response) =>{
-    const token = response.date?.token;
+    const token = response.data?.token;
     if(token){
         localStorage.setItem("token", token)
     }

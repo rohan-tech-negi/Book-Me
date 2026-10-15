@@ -33,7 +33,22 @@ export const requestEmailOtp = async ({ email, purpose }) => {
         expiresAt
     })
 
-    await sendOtpNotification({ email: normalizedEmail, code, purpose: normalizedPurpose })
+    console.log(`\n========================================\n[DEV OTP] Verification code for ${normalizedEmail}: ${code}\n========================================\n`);
+
+    try {
+        await sendOtpNotification({ email: normalizedEmail, code, purpose: normalizedPurpose });
+    } catch (emailError) {
+        console.warn(`[OTP WARNING] Brevo email delivery failed: ${emailError.message}`);
+        if (process.env.NODE_ENV === 'production') {
+            throw emailError;
+        }
+        return {
+            sent: false,
+            email: normalizedEmail,
+            expiresInMinutes: OTP_TTL_MINUTES,
+            warning: emailError.message,
+        };
+    }
 
     return {
         sent: true,
