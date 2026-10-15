@@ -1,6 +1,6 @@
 import logo from "../assets/logo.png"
 import {Link, NavLink, useNavigate} from 'react-router-dom'
-import {ChevronDown, LogOut, Menu, SquareMenu, X} from 'lucide-react'
+import {ChevronDown, LogOut, SquareMenu, X} from 'lucide-react'
 import { useEffect, useState, useRef } from "react"
 import {getMe} from "../api/auth"
 import { appLayoutStyles as s } from '../assests/dummy'
@@ -58,14 +58,14 @@ export default function AppLayout({children}) {
 
                     {/* navigatuon desktop */}
                     <nav className={s.navDesktop}>
-                        {navItems.map((item)=>{
+                        {navItems.map((item) => (
                             <NavLink 
                             key={item.to}
                             to={item.to}
                             className={({isActive})=> isActive ? s.navLinkActive: s.navLinkInactive}>
                                 {item.label}
                             </NavLink>
-                        })}
+                        ))}
 
                     </nav>
 
@@ -167,7 +167,7 @@ export default function AppLayout({children}) {
                                 <div className={s.footerCreditWrapper}>
                             <a href="https://hexagondigitalservices.com"
                             target="_blank"
-                            ref="noreferrer"
+                            rel="noreferrer"
                             className={s.footerCreditLink}>
                                 <img  alt="" className={s.footerCreditLogo}/>
                                 <span className={s.footerCreditText}>

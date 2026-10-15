@@ -14,7 +14,6 @@ import {
   Copy,
   RefreshCcw,
 } from "lucide-react";
-import logo from "../assets/logo.png";
 import p1Image from "../assets/P1.png";
 import whatsappLogo from "../assets/WhatsApp-Logo.wine.png";
 import instaLogo from "../assets/Instagram-Glyph-Color-Logo.wine.png";
@@ -45,7 +44,7 @@ import A12 from "../assets/avatars/A12.png";
 import A13 from "../assets/avatars/A13.png";
 import A15 from "../assets/avatars/A15.png";
 import A16 from "../assets/avatars/A16.png";
-import { dashboardPageStyles as s } from "../assets/dummyStyles";
+import { dashboardPageStyles as s } from "../assests/dummy";
 
 
 const ICON_MAP = {

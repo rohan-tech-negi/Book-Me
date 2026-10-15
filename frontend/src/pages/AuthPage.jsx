@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import {useLocation, useNavigate, Link} from "react-router-dom"
 import {login, register, requestRegistrationOtp, verifyRegistrationOtp} from "../api/auth"
 import logo from "../assets/logo.png"
-import {User, Mail, Lock, Building2, ArrowRight,CalenderDays, Shield, Zap, BadgeCheck} from "lucide-react"
+import {User, Mail, Lock, Building2, ArrowRight, CalendarDays, Shield, Zap, BadgeCheck} from "lucide-react"
 import {authPageStyles as s} from "../assests/dummy"   
 
 const initialForm = {
@@ -27,9 +27,9 @@ export default function AuthPage() {
 
     const isRegister = mode === "register"
     const fromLocation = location.state?.form;
-    const redirectTo  = fromLocation ? `${fromLocation.pathname}${fromLocation.search | ""}` : "/profile"
+    const redirectTo  = fromLocation ? `${fromLocation.pathname}${fromLocation.search || ""}` : "/profile"
 
-    useState(()=> {
+    useEffect(() => {
         if(otpCooldown <= 0) return ;
         const interval = setInterval(()=>{
             setOtpCooldown((prev)=>{
@@ -152,7 +152,7 @@ export default function AuthPage() {
                     <div className={s.featureGrid}>
                         <div className={s.featureCard}>
                             <div className={s.featureIconWrapPurple}>
-                                <CalenderDays className={s.featureIconPurple}></CalenderDays>
+                                <CalendarDays className={s.featureIconPurple}></CalendarDays>
                             </div>
                             <div>
                                 <p className={s.featureTitle}>Easy setup</p>

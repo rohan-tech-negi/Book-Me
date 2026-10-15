@@ -308,7 +308,7 @@ const AdminDashboardPage = () => {
                                 </div>
                               </div>
 
-                              <div className={s.withdrawalAccountIcon}>
+                              <div className={s.withdrawalAccountInfo}>
                                 <Landmark className={s.withdrawalAccountIcon} />
                                 {withdrawal.payoutSnapshot?.bankName || "UPI Connection"}{" "}{" "}
                                 {withdrawal.payoutSnapshot?.accountLast4 ? `***** ${withdrawal.payoutSnapshot.accountLast4} ` : withdrawal.payoutSnapshot?.upiId}
