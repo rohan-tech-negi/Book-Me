@@ -41,6 +41,7 @@ const PublicOnlyRoute = ({children}) => {
 const App = () => {
   return (
     <Routes>
+      <Route path="/" element={<ProtectedRoute><DashboardPage></DashboardPage></ProtectedRoute>}></Route>
       <Route path="/login" element={<PublicOnlyRoute><AuthPage></AuthPage></PublicOnlyRoute>}></Route>
       <Route path="/admin/login" element={<AdminLoginPage />} />
       <Route

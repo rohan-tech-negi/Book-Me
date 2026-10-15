@@ -3,8 +3,8 @@ import { useEffect, useMemo, useState } from "react";
 import AppLayout from "../components/AppLayout";
 import { getMe } from "../api/auth";
 import { listBookings } from "../api/bookings";
-import { getPaymentOverview } from "../api/payments";
-import { listServices } from "../api/services";
+import { getPaymentOverview } from "../api/payment";
+import { listServices } from "../api/service";
 import {
   ArrowRight,
   Calendar,
