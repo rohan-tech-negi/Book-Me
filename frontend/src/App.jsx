@@ -1,7 +1,20 @@
-import { Navigate, Route, Routes } from "react-router-dom"
+import { Navigate, Route, Routes, useLocation } from "react-router-dom"
 import AdminDashboardPage from "./admin/adminDashboardPage"
 import AdminLoginPage from "./admin/adminLoginPage"
 import AuthPage from "./pages/AuthPage"
+import DashboardPage from "./pages/DashboardPage"
+
+
+const ProtectedRoute  = ({children}) => {
+  const location = useLocation()
+  const hasToken = Boolean(localStorage.getItem('token'))
+
+  if(!hasToken){
+    return <Navigate to="/login" replace state={({from: location})}></Navigate>
+  }
+
+  return children
+}
 
 const AdminProtectedRoute = ({ children }) => {
   const hasAdminToken = Boolean(localStorage.getItem('adminToken'))
