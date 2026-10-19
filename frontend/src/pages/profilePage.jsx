@@ -28,4 +28,16 @@ import yellowBanner from "../assets/yellow.png"
 import { brandThemeOptions, brandThemeStyles, profilePageStyles } from "../assests/dummy";
 
 
-const getCal
+const getCalenderMessage = (value) =>{
+    if(value == "connected") return "Google Calender connected sucessfully"
+    if(value) return "Google Calender connection was not completed"
+    return ""
+}
+
+const themeBannerImages = {
+    emerald: greenBanner,
+    indigo : purpleBanner,
+    rose: redBanner,
+    amber: yellowBanner,
+    slate: whiteBanner
+}
