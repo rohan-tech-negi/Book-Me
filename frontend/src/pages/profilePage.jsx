@@ -25,7 +25,7 @@ import redBanner from "../assets/red.png"
 import whiteBanner from "../assets/white.png"
 import yellowBanner from "../assets/yellow.png"
 
-import { brandThemeOptions, brandThemeStyles, profilePageStyles } from "../assests/dummy";
+import { brandThemeOptions, brandThemeStyles, getBrandThemeStyle, profilePageStyles } from "../assests/dummy";
 
 
 const getCalenderMessage = (value) =>{
@@ -53,5 +53,15 @@ export default function ProfilePage() {
     brandAccent: "#6CA7FF"
   })
 
-  
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [connectionCalender, setConnectionCalender] = useState(false)
+  const [message, setMessage] = useState(getCalenderMessage(calenderNotice))
+
+  const [copyMessage, setCopyMessage] = useState("")
+
+
+  const publicLink = user?.slug ? `${window.location.origin}/book/${user.slug}` : `${window.location.origin}`
+
+  const dynamicThemeUI = getBrandThemeStyle
 }
