@@ -41,3 +41,17 @@ const themeBannerImages = {
     amber: yellowBanner,
     slate: whiteBanner
 }
+
+export default function ProfilePage() {
+  const [searchParams] = useSearchParams();
+  const calenderNotice = searchParams.get('calender')
+  const [form, setForm] = useState({
+    businessName: "",
+    businessDescription: "",
+    timezone: "Asia/kolkata",
+    brandTheme: "emrald",
+    brandAccent: "#6CA7FF"
+  })
+
+  
+}
