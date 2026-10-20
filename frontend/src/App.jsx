@@ -3,6 +3,7 @@ import AdminDashboardPage from "./admin/adminDashboardPage"
 import AdminLoginPage from "./admin/adminLoginPage"
 import AuthPage from "./pages/AuthPage"
 import DashboardPage from "./pages/DashboardPage"
+import ProfilePage from "./pages/profilePage"
 
 
 const ProtectedRoute  = ({children}) => {
@@ -42,6 +43,7 @@ const App = () => {
   return (
     <Routes>
       <Route path="/" element={<ProtectedRoute><DashboardPage></DashboardPage></ProtectedRoute>}></Route>
+      <Route path="/profile" element={<ProtectedRoute><ProfilePage></ProfilePage></ProtectedRoute>}></Route>
       <Route path="/login" element={<PublicOnlyRoute><AuthPage></AuthPage></PublicOnlyRoute>}></Route>
       <Route path="/admin/login" element={<AdminLoginPage />} />
       <Route
