@@ -25,7 +25,7 @@ import A13 from "../assets/avatars/A13.png";
 import A15 from "../assets/avatars/A15.png";
 import A16 from "../assets/avatars/A16.png";
 import { bookingsPageStyles as s } from "../assests/dummy";
-import { use, useState } from "react";
+import { use, useEffect, useState } from "react";
 
 
 
@@ -64,6 +64,30 @@ const bookingsPage = () => {
       dateStyle: "medium",
       timeStyle: "short",
     }).format(new Date(value))
+
+    const fetchBookings = async(nextFilters) =>{
+      try {
+        const params = {}
+        if(nextFilters.date) params.date = nextFilters.date;
+        if(nextFilters.status) params.status = nextFilters.status
+
+        const {data} = await listBookings(params)
+        setBookings(data.bookings || [])
+      } catch (error) {
+        setMessage(error.response?.data?.message || "Could not load Bookings")
+      }
+    }
+
+    const loadBookings = () => fetchBookings(filters)
+
+    useEffect(() => {
+      const loadFilteredBookings = async() => {
+        await fetchBookings(filters)
+      }
+      loadFilteredBookings()
+    }, [filters])
+
+    const 
   }
   return (
     <div>bookingsPage</div>
