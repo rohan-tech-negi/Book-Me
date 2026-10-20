@@ -92,7 +92,17 @@ const bookingsPage = () => {
       loadBookings()
     }
 
-    const 
+    const updateRescheduleDraft = (booking, key, value) => {
+      setReschedule((prev) => ({
+        ...prev, [booking._id] : {
+          date: booking.date,
+          startTime: booking.startTime,
+          endTime: booking.endTime,
+          ...prev[booking._id],
+          [key] : value
+        }
+      }))
+    }
   }
   return (
     <div>bookingsPage</div>
