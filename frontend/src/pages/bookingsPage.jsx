@@ -7,6 +7,7 @@ import {
   Wallet,
   Copy,
   RefreshCcw,
+  CalendarDays,
 } from "lucide-react";
 import AppLayout from "../components/AppLayout.jsx"
 
@@ -136,7 +137,30 @@ const bookingsPage = () => {
     <AppLayout>
 
       <section className={s.headerSection}>
-          
+          <div className={s.headerLeftArea}>
+              <div>
+                <p className={s.bookingLabel}>Bookings</p>
+                <h1 className={s.mainHeading}>Manage customer{" "}
+                  <span className={s.mainHeadingGradient}>
+                    appointment
+                  </span>
+                </h1>
+                <p className={s.subText}>Review payment , calender sync and appointment status from one calm workspace</p>
+              </div>
+              <div className={s.illustrationContainer}>
+                <img src={p7Image} className={s.illustrationImg} alt="" />
+              </div>
+          </div>
+
+          <div className={s.filterRow}>
+            <div className={s.filterDateContainer}>
+              <CalendarDays className={s.filterIcon}>
+
+              </CalendarDays>
+              <input type="data" value={filters.data} onChange={(event) => setFilters((prev)=> ({...prev, data: event.target.value}))}
+              className={s.filterDateInput} placeholder="Select date" />
+            </div>
+          </div>
       </section>
     </AppLayout>
   )
