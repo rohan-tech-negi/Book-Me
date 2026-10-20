@@ -63,7 +63,7 @@ export default function ProfilePage() {
 
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [connectionCalender, setConnectionCalender] = useState(false)
+  const [connectingCalendar, setConnectingCalendar] = useState(false)
   const [message, setMessage] = useState(getCalenderMessage(calenderNotice))
 
   const [copyMessage, setCopyMessage] = useState("")
@@ -78,7 +78,7 @@ export default function ProfilePage() {
     "--brand-panel": dynamicThemeUI.panel,
 
   }
-  const previewBannnerImage = themeBannerImages[form.brandTheme] || greenBanner
+  const previewBannerImage = themeBannerImages[form.brandTheme] || greenBanner
 
   useEffect(() => {
     const loadUser = async () => {
