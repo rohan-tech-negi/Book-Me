@@ -8,6 +8,7 @@ import {
   Copy,
   RefreshCcw,
 } from "lucide-react";
+import AppLayout from "../components/AppLayout.jsx"
 
 import A1 from "../assets/avatars/A1.png";
 import A2 from "../assets/avatars/A2.png";
@@ -132,7 +133,12 @@ const bookingsPage = () => {
     ? s.messageBannerSuccess : s.messageBannerInfo
   }
   return (
-    <div>bookingsPage</div>
+    <AppLayout>
+
+      <section className={s.headerSection}>
+          
+      </section>
+    </AppLayout>
   )
 }
 
