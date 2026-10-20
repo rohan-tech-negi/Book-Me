@@ -25,6 +25,7 @@ import A13 from "../assets/avatars/A13.png";
 import A15 from "../assets/avatars/A15.png";
 import A16 from "../assets/avatars/A16.png";
 import { bookingsPageStyles as s } from "../assests/dummy";
+import { use, useState } from "react";
 
 
 
@@ -50,6 +51,20 @@ const AVATAR_MAP = {
 const statuses = ["", "confirmed", "rescheduled", "cancelled"]
 
 const bookingsPage = () => {
+  const [cookings, setBookings] = useState([])
+  const [filters, setFilters] = useState({date: "", status: ""})
+  const [message, setMessage] = useState("")
+  const [reschedule, setReschedule] = useState({})
+  const [cancelModelBookingId, setCancelModelBookingId] = useState(null)
+  const [rescheduleModelBooking, setRescheduleBooking] = useState(null)
+
+  const formatTimeStamp = (value) =>{
+    if(!value) return "Not available"
+    return new Intl.DateTimeFormat("en-In", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(new Date(value))
+  }
   return (
     <div>bookingsPage</div>
   )
