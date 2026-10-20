@@ -1,17 +1,19 @@
-import {listBookings, updateBookingsStatus, rescheduleBooking} from "../api/bookings.js"
+import { listBookings, updateBookingsStatus, rescheduleBooking } from "../api/bookings.js";
 import {
-  ArrowRight,
   Calendar,
-  CheckCircle,
   Clock,
-  Wallet,
-  Copy,
   RefreshCcw,
   CalendarDays,
   Info,
+  Filter,
+  Check,
+  CreditCard,
+  ExternalLink,
+  XCircle,
 } from "lucide-react";
-import AppLayout from "../components/AppLayout.jsx"
+import AppLayout from "../components/AppLayout.jsx";
 
+import p7Image from "../assets/P7.png";
 import A1 from "../assets/avatars/A1.png";
 import A2 from "../assets/avatars/A2.png";
 import A3 from "../assets/avatars/A3.png";
@@ -28,10 +30,7 @@ import A13 from "../assets/avatars/A13.png";
 import A15 from "../assets/avatars/A15.png";
 import A16 from "../assets/avatars/A16.png";
 import { bookingsPageStyles as s } from "../assests/dummy";
-import { use, useEffect, useState } from "react";
-
-
-
+import { useEffect, useState } from "react";
 
 const AVATAR_MAP = {
   "A1.png": A1,
@@ -51,138 +50,171 @@ const AVATAR_MAP = {
   "A16.png": A16,
 };
 
-const statuses = ["", "confirmed", "rescheduled", "cancelled"]
+const statuses = ["", "confirmed", "rescheduled", "cancelled"];
 
-const bookingsPage = () => {
-  const [cookings, setBookings] = useState([])
-  const [filters, setFilters] = useState({date: "", status: ""})
-  const [message, setMessage] = useState("")
-  const [reschedule, setReschedule] = useState({})
-  const [cancelModelBookingId, setCancelModelBookingId] = useState(null)
-  const [rescheduleModelBooking, setRescheduleBooking] = useState(null)
+const BookingsPage = () => {
+  const [bookings, setBookings] = useState([]);
+  const [filters, setFilters] = useState({ date: "", status: "" });
+  const [message, setMessage] = useState("");
+  const [reschedules, setReschedules] = useState({});
+  const [cancelModalBookingId, setCancelModalBookingId] = useState(null);
+  const [rescheduleModalBooking, setRescheduleModalBooking] = useState(null);
 
-  const formatTimeStamp = (value) =>{
-    if(!value) return "Not available"
-    return new Intl.DateTimeFormat("en-In", {
+  const formatTimestamp = (value) => {
+    if (!value) return "Not available";
+    return new Intl.DateTimeFormat("en-IN", {
       dateStyle: "medium",
       timeStyle: "short",
-    }).format(new Date(value))
+    }).format(new Date(value));
+  };
 
-    const fetchBookings = async(nextFilters) =>{
+  const fetchBookings = async (nextFilters) => {
+    try {
+      const params = {};
+      if (nextFilters?.date) params.date = nextFilters.date;
+      if (nextFilters?.status) params.status = nextFilters.status;
+
+      const { data } = await listBookings(params);
+      setBookings(data.bookings || []);
+    } catch (error) {
+      setMessage(error.response?.data?.message || "Could not load Bookings");
+    }
+  };
+
+  const loadBookings = () => fetchBookings(filters);
+
+  useEffect(() => {
+    let ignore = false;
+
+    const loadFilteredBookings = async () => {
       try {
-        const params = {}
-        if(nextFilters.date) params.date = nextFilters.date;
-        if(nextFilters.status) params.status = nextFilters.status
+        const params = {};
+        if (filters.date) params.date = filters.date;
+        if (filters.status) params.status = filters.status;
 
-        const {data} = await listBookings(params)
-        setBookings(data.bookings || [])
-      } catch (error) {
-        setMessage(error.response?.data?.message || "Could not load Bookings")
-      }
-    }
-
-    const loadBookings = () => fetchBookings(filters)
-
-    useEffect(() => {
-      const loadFilteredBookings = async() => {
-        await fetchBookings(filters)
-      }
-      loadFilteredBookings()
-    }, [filters])
-
-    const setStatus = async(bookings, status) => {
-      await updateBookingsStatus(bookings._id, status)
-      loadBookings()
-    }
-
-    const updateRescheduleDraft = (booking, key, value) => {
-      setReschedule((prev) => ({
-        ...prev, [booking._id] : {
-          date: booking.date,
-          startTime: booking.startTime,
-          endTime: booking.endTime,
-          ...prev[booking._id],
-          [key] : value
+        const { data } = await listBookings(params);
+        if (!ignore) {
+          setBookings(data.bookings || []);
         }
-      }))
-    }
+      } catch (error) {
+        if (!ignore) {
+          setMessage(error.response?.data?.message || "Could not load Bookings");
+        }
+      }
+    };
 
-    const submitReschedule = async(booking) =>{
-      const draft = {
-        data: booking.date,
+    loadFilteredBookings();
+
+    return () => {
+      ignore = true;
+    };
+  }, [filters]);
+
+  const setStatus = async (booking, status) => {
+    await updateBookingsStatus(booking._id, status);
+    loadBookings();
+  };
+
+  const updateRescheduleDraft = (booking, key, value) => {
+    setReschedules((prev) => ({
+      ...prev,
+      [booking._id]: {
+        date: booking.date,
         startTime: booking.startTime,
         endTime: booking.endTime,
-        ...reschedule[booking._id]
-      }
-      try {
-        const {data} = await rescheduleBooking(booking._id, draft)
-        setMessage(
-          data.email?.skipped 
+        ...prev[booking._id],
+        [key]: value,
+      },
+    }));
+  };
+
+  const submitReschedule = async (booking) => {
+    const draft = {
+      date: booking.date,
+      startTime: booking.startTime,
+      endTime: booking.endTime,
+      ...reschedules[booking._id],
+    };
+    try {
+      const { data } = await rescheduleBooking(booking._id, draft);
+      setMessage(
+        data.email?.skipped
           ? `Booking rescheduled, but email was skipped : ${data.email.reason}`
           : "booking rescheduled, customer notifcation and caleder updated"
-        )
-        setReschedule((prev) => ({...prev, [booking._id]: undefined}))
-        loadBookings()
-      } catch (error) {
-        setMessage(
-          error.response?.data?.message || "Could not reschedule booking"
-        )
-      }
+      );
+      setReschedules((prev) => ({ ...prev, [booking._id]: undefined }));
+      loadBookings();
+    } catch (error) {
+      setMessage(
+        error.response?.data?.message || "Could not reschedule booking"
+      );
     }
+  };
 
-    const getBannerVarient = (msg) => 
-      msg.toLowerCase().include("triggered") || msg.toLowerCase().include("success") 
-    ? s.messageBannerSuccess : s.messageBannerInfo
-  }
+  const getBannerVarient = (msg) =>
+    msg.toLowerCase().includes("triggered") || msg.toLowerCase().includes("success")
+      ? s.messageBannerSuccess
+      : s.messageBannerInfo;
+
   return (
     <AppLayout>
-
       <section className={s.headerSection}>
-          <div className={s.headerLeftArea}>
-              <div>
-                <p className={s.bookingLabel}>Bookings</p>
-                <h1 className={s.mainHeading}>Manage customer{" "}
-                  <span className={s.mainHeadingGradient}>
-                    appointment
-                  </span>
-                </h1>
-                <p className={s.subText}>Review payment , calender sync and appointment status from one calm workspace</p>
-              </div>
-              <div className={s.illustrationContainer}>
-                <img src={p7Image} className={s.illustrationImg} alt="" />
-              </div>
+        <div className={s.headerLeftArea}>
+          <div>
+            <p className={s.bookingLabel}>Bookings</p>
+            <h1 className={s.mainHeading}>
+              Manage customer{" "}
+              <span className={s.mainHeadingGradient}>appointment</span>
+            </h1>
+            <p className={s.subText}>
+              Review payment , calender sync and appointment status from one calm workspace
+            </p>
           </div>
-
-          <div className={s.filterRow}>
-            <div className={s.filterDateContainer}>
-              <CalendarDays className={s.filterIcon}>
-
-              </CalendarDays>
-              <input type="data" value={filters.data} onChange={(event) => setFilters((prev)=> ({...prev, data: event.target.value}))}
-              className={s.filterDateInput} placeholder="Select date" />
-            </div>
-            <div className={s.filterStatusContainer}>
-              <select value={filters.status} onChange={(event) => 
-                setFilters((prev) => ({...prev, status: event.target.value}))
-              } className={s.filterStatusSelect}>
-                {statuses.map((status)=> (
-                  <option key={status} value={status}>{status ? status.replace("_" , " ") : "All statues"}</option>
-                ))}
-              </select>
-
-              <Filter className={s.filterSelectIcon}></Filter>
-            </div>
+          <div className={s.illustrationContainer}>
+            <img src={p7Image} className={s.illustrationImg} alt="" />
           </div>
+        </div>
+
+        <div className={s.filterRow}>
+          <div className={s.filterDateContainer}>
+            <CalendarDays className={s.filterIcon} />
+            <input
+              type="date"
+              value={filters.date}
+              onChange={(event) =>
+                setFilters((prev) => ({ ...prev, date: event.target.value }))
+              }
+              className={s.filterDateInput}
+              placeholder="Select date"
+            />
+          </div>
+          <div className={s.filterStatusContainer}>
+            <select
+              value={filters.status}
+              onChange={(event) =>
+                setFilters((prev) => ({ ...prev, status: event.target.value }))
+              }
+              className={s.filterStatusSelect}
+            >
+              {statuses.map((status) => (
+                <option key={status} value={status}>
+                  {status ? status.replace("_", " ") : "All statuses"}
+                </option>
+              ))}
+            </select>
+
+            <Filter className={s.filterSelectIcon} />
+          </div>
+        </div>
       </section>
 
       {message && (
         <div className={`${s.messageBanner} ${getBannerVarient(message)}`}>
-          <Info className="w-4 h-4"></Info>
+          <Info className="w-4 h-4" />
           {message}
         </div>
       )}
 
-      
       {/* Booking cards */}
       <section className={s.bookingListSection}>
         {bookings.length === 0 && (
@@ -391,7 +423,7 @@ const bookingsPage = () => {
                       updateRescheduleDraft(
                         rescheduleModalBooking,
                         "date",
-                        event.target.value,
+                        event.target.value
                       )
                     }
                     className={s.rescheduleInputField}
@@ -409,7 +441,7 @@ const bookingsPage = () => {
                       updateRescheduleDraft(
                         rescheduleModalBooking,
                         "startTime",
-                        event.target.value,
+                        event.target.value
                       )
                     }
                     className={s.rescheduleInputField}
@@ -427,7 +459,7 @@ const bookingsPage = () => {
                       updateRescheduleDraft(
                         rescheduleModalBooking,
                         "endTime",
-                        event.target.value,
+                        event.target.value
                       )
                     }
                     className={s.rescheduleInputField}
@@ -462,7 +494,7 @@ const bookingsPage = () => {
         </div>
       )}
     </AppLayout>
-  )
-}
+  );
+};
 
-export default bookingsPage
+export default BookingsPage;
