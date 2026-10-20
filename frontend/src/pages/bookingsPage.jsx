@@ -87,6 +87,11 @@ const bookingsPage = () => {
       loadFilteredBookings()
     }, [filters])
 
+    const setStatus = async(bookings, status) => {
+      await updateBookingsStatus(bookings._id, status)
+      loadBookings()
+    }
+
     const 
   }
   return (
