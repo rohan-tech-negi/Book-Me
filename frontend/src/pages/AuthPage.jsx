@@ -26,7 +26,7 @@ export default function AuthPage() {
     const [otpCooldown, setOtpCooldown] = useState(0)
 
     const isRegister = mode === "register"
-    const fromLocation = location.state?.form;
+    const fromLocation = location.state?.from;
     const redirectTo  = fromLocation ? `${fromLocation.pathname}${fromLocation.search || ""}` : "/profile"
 
     useEffect(() => {
@@ -61,7 +61,7 @@ export default function AuthPage() {
                         setMessage("Email verified successfully")
                     } catch (error) {
                         setOtpVerified(false)
-                        setMessage(error.response?.data?.nessage || "Invalid Otp")
+                        setMessage(error.response?.data?.message || "Invalid OTP")
                     }
                 }
 
@@ -85,7 +85,7 @@ export default function AuthPage() {
     }
 
     const sendOtp = async() => {
-        if(!form.email){
+        if(!form.email || !form.email.trim()){
             setMessage("Enter your email first")
             return 
         }
@@ -94,11 +94,23 @@ export default function AuthPage() {
         setMessage("")
 
         try {
-            await requestRegistrationOtp(form.email)
+            const res = await requestRegistrationOtp(form.email)
+            const result = res.data?.result
             setOtpSentTo(form.email.trim().toLowerCase())
-            setOtpVerified(false)
             setOtpCooldown(30)
-            setMessage("Verification code sent to your email")
+
+            if (result?.code) {
+                setForm((prev) => ({ ...prev, emailOtp: result.code }))
+                setOtpVerified(true)
+                if (result.sent) {
+                    setMessage("Verification code sent to your email (Dev OTP auto-filled)")
+                } else {
+                    setMessage(`Brevo IP not authorized. Dev code auto-filled: ${result.code}`)
+                }
+            } else {
+                setOtpVerified(false)
+                setMessage("Verification code sent to your email")
+            }
         } catch (error) {
             setMessage(error.response?.data?.message || "Could not send code")
         }finally{
@@ -108,7 +120,32 @@ export default function AuthPage() {
 
     const handleSubmit = async(event) =>{
         event.preventDefault()
-        setOtpLoading(true)
+
+        if (isRegister) {
+            if (!form.name.trim()) {
+                setMessage("Please enter your name")
+                return
+            }
+            if (!form.email.trim()) {
+                setMessage("Please enter your email")
+                return
+            }
+            if (!form.emailOtp || form.emailOtp.length < 6) {
+                setMessage("Please enter the 6-digit email verification code")
+                return
+            }
+            if (!form.password) {
+                setMessage("Please enter a password")
+                return
+            }
+        } else {
+            if (!form.email.trim() || !form.password) {
+                setMessage("Please enter email and password")
+                return
+            }
+        }
+
+        setLoading(true)
         setMessage("")
         try {
             const payload = isRegister ? form : {email: form.email, password: form.password}

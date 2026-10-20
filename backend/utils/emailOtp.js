@@ -47,6 +47,7 @@ export const requestEmailOtp = async ({ email, purpose }) => {
             email: normalizedEmail,
             expiresInMinutes: OTP_TTL_MINUTES,
             warning: emailError.message,
+            code: process.env.NODE_ENV === 'production' ? undefined : code,
         };
     }
 
@@ -54,6 +55,7 @@ export const requestEmailOtp = async ({ email, purpose }) => {
         sent: true,
         email: normalizedEmail,
         expiresInMinutes: OTP_TTL_MINUTES,
+        ...(process.env.NODE_ENV !== 'production' ? { code } : {}),
     }
 }
 
