@@ -8,6 +8,7 @@ import {
   Copy,
   RefreshCcw,
   CalendarDays,
+  Info,
 } from "lucide-react";
 import AppLayout from "../components/AppLayout.jsx"
 
@@ -160,8 +161,26 @@ const bookingsPage = () => {
               <input type="data" value={filters.data} onChange={(event) => setFilters((prev)=> ({...prev, data: event.target.value}))}
               className={s.filterDateInput} placeholder="Select date" />
             </div>
+            <div className={s.filterStatusContainer}>
+              <select value={filters.status} onChange={(event) => 
+                setFilters((prev) => ({...prev, status: event.target.value}))
+              } className={s.filterStatusSelect}>
+                {statuses.map((status)=> (
+                  <option key={status} value={status}>{status ? status.replace("_" , " ") : "All statues"}</option>
+                ))}
+              </select>
+
+              <Filter className={s.filterSelectIcon}></Filter>
+            </div>
           </div>
       </section>
+
+      {message && (
+        <div className={`${s.messageBanner} ${getBannerVarient(message)}`}>
+          <Info className="w-4 h-4"></Info>
+          {message}
+        </div>
+      )}
     </AppLayout>
   )
 }
