@@ -103,6 +103,29 @@ const bookingsPage = () => {
         }
       }))
     }
+
+    const submitReschedule = async(booking) =>{
+      const draft = {
+        data: booking.date,
+        startTime: booking.startTime,
+        endTime: booking.endTime,
+        ...reschedule[booking._id]
+      }
+      try {
+        const {data} = await rescheduleBooking(booking._id, draft)
+        setMessage(
+          data.email?.skipped 
+          ? `Booking rescheduled, but email was skipped : ${data.email.reason}`
+          : "booking rescheduled, customer notifcation and caleder updated"
+        )
+        setReschedule((prev) => ({...prev, [booking._id]: undefined}))
+        loadBookings()
+      } catch (error) {
+        setMessage(
+          error.response?.data?.message || "Could not reschedule booking"
+        )
+      }
+    }
   }
   return (
     <div>bookingsPage</div>
