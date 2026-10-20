@@ -126,6 +126,10 @@ const bookingsPage = () => {
         )
       }
     }
+
+    const getBannerVarient = (msg) => 
+      msg.toLowerCase().include("triggered") || msg.toLowerCase().include("success") 
+    ? s.messageBannerSuccess : s.messageBannerInfo
   }
   return (
     <div>bookingsPage</div>
