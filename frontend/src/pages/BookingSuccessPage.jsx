@@ -37,4 +37,10 @@ export default function BookingSuccessPage(){
         }
         loadBookings()
     }, [searchParams])
+
+    return (
+        <div className={s.container}>
+
+        </div>
+    )
 }
