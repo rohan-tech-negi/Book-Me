@@ -42,5 +42,12 @@ export default function AvailabilityPage() {
         return dayAvailability?.slots?.length ? dayAvailability.slots : [defaultSlot]
     }
 
-    
+    const currecntDaySummary = useMemo(
+        () => availability.find((item) => item.dayOfWeek === selectedDay),
+        [availability, selectedDay]
+    )
+
+    useEffect(() => {
+        consy 
+    })
 }
