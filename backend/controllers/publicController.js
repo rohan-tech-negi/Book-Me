@@ -340,7 +340,9 @@ export const getBookingStatus = async (req, res) => {
       return res.status(400).json({ message: 'Booking identifier is required' });
     }
 
-    let booking = await Booking.findOne(query).populate('serviceId', 'name duration price');
+    let booking = await Booking.findOne(query)
+      .populate('serviceId', 'name duration price')
+      .populate('userId', 'name slug businessName');
     if (!booking) {
       return res.status(404).json({ message: 'Booking not found' });
     }
@@ -369,7 +371,9 @@ export const getBookingStatus = async (req, res) => {
       }
 
       await confirmPaidBooking({ booking, business, service, session });
-      booking = await Booking.findById(booking._id).populate('serviceId', 'name duration price');
+      booking = await Booking.findById(booking._id)
+        .populate('serviceId', 'name duration price')
+        .populate('userId', 'name slug businessName');
     }
 
     res.json({ booking });
@@ -380,7 +384,7 @@ export const getBookingStatus = async (req, res) => {
 
 export const cancelPublicBookingPayment = async (req, res) => {
   try {
-    const { booking_id: bookingId } = req.body;
+    const bookingId = req.body?.booking_id || req.query?.booking_id;
 
     if (!bookingId) {
       return res.status(400).json({ message: 'Booking identifier is required' });

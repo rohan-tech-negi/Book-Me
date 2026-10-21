@@ -1,76 +1,156 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import {getPublicBookingStatus, getPublicStatus } from "../api/public"
-import { BadgeCheck, Calendar, CalenderDays, ArrowLeft, Badge } from "lucide-react";
+import { getPublicBookingStatus } from "../api/public";
+import { BadgeCheck, Calendar, CalendarDays, ArrowLeft, Loader2, XCircle } from "lucide-react";
 import { bookingSuccessPageStyles as s } from "../assests/dummy";
 
-
-export default function BookingSuccessPage(){
-    const [searchParams] = useSearchParams()
-    const [booking, setBooking] = useState(null)
-    const [message, setMessage] = useState("Verifying your payment....")
+export default function BookingSuccessPage() {
+    const [searchParams] = useSearchParams();
+    const [booking, setBooking] = useState(null);
+    const [statusType, setStatusType] = useState("loading"); // "loading" | "success" | "error"
+    const [message, setMessage] = useState("Verifying your payment...");
 
     useEffect(() => {
-        const loadBookings = async()=> {
-            const sessionId = searchParams.get("session_id")
+        let isMounted = true;
 
-            if(!sessionId){
-                setMessage(
-                    "We could not verify the payment. No booking was created"
-                )
+        const loadBooking = async () => {
+            const sessionId = searchParams.get("session_id");
+            const bookingId = searchParams.get("booking_id");
+
+            if (!sessionId && !bookingId) {
+                if (isMounted) {
+                    setStatusType("error");
+                    setMessage("We could not verify the payment. No booking was created.");
+                }
                 return;
             }
+
             try {
-                const {data} = await getPublicBookingStatus({
-                    session_id: sessionId
-                })
-                setBooking(data.booking)
-                setMessage(
-                    data.booking.status === "confirmed" && data.booking.paymentStatus === "paid"
-                    ? "Payment recieve your booking is confirmed": "we could not verify the payment. no booking was created"
-                )
+                const params = sessionId ? { session_id: sessionId } : { booking_id: bookingId };
+                const { data } = await getPublicBookingStatus(params);
+
+                if (!isMounted) return;
+
+                const loadedBooking = data?.booking;
+                setBooking(loadedBooking || null);
+
+                const isConfirmed =
+                    loadedBooking?.status === "confirmed" &&
+                    (loadedBooking?.paymentStatus === "paid" || loadedBooking?.paymentStatus === "not_required");
+
+                if (isConfirmed) {
+                    setStatusType("success");
+                    setMessage(
+                        loadedBooking.paymentStatus === "paid"
+                            ? "Payment received! Your booking is confirmed."
+                            : "Your booking is confirmed!"
+                    );
+                } else {
+                    setStatusType("error");
+                    setMessage("We could not verify the payment. No booking was created.");
+                }
             } catch (error) {
+                if (!isMounted) return;
+                setStatusType("error");
+                if (error.response?.data?.booking) {
+                    setBooking(error.response.data.booking);
+                }
                 setMessage(
-                    error.response?.data?.message || "We could not vrify the payment. No booking was created"
-                )
+                    error.response?.data?.message || "We could not verify the payment. No booking was created."
+                );
             }
-        }
-        loadBookings()
-    }, [searchParams])
+        };
+
+        loadBooking();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [searchParams]);
+
+    const slug = searchParams.get("slug") || booking?.userId?.slug || "";
+    const calendarUrl = booking?.customerCalendarUrl || booking?.customerCalenderUrl;
 
     return (
         <div className={s.container}>
             <main className={s.card}>
-                <div className={s.iconCircle}>
-                    <BadgeCheck className={s.checkIcon}></BadgeCheck>
-                </div>
-                <p className={s.statusLabel}>Payment verification</p>
-                <h1 className={s.heading}>{message}</h1>
-                {booking && (
-                    <div className={s.bookingDetails}>
-                        <div className={s.serviceRow}>
-                            <CalenderDays className={s.calendarDaysIcon}></CalenderDays>
-                            <p className={s.serviceName}>
-                                {booking.serviceId?.name || "Appointment"}
-                            </p>
+                {statusType === "loading" && (
+                    <>
+                        <div className={s.iconCircleLoading || s.iconCircle}>
+                            <Loader2 className={s.loadingIcon || s.checkIcon} />
                         </div>
-                        <p className={s.detailText}>
-                            {booking.date} . {booking.startTime} - {booking.endTime}
+                        <p className={s.statusLabelLoading || s.statusLabel}>
+                            Payment Verification
                         </p>
-                        <p className={s.statusText}>
-                            Status: {booking.status.replace("_", "")}
+                        <h1 className={s.heading}>{message}</h1>
+                        <p className={s.description || "mt-2 text-sm text-slate-500"}>
+                            Please hold on while we verify your appointment details.
                         </p>
-                    </div>
+                    </>
                 )}
-                {booking?.customerCalenderUrl && (
-                    <a href={booking.customerCalenderUrl} target="_blank" className={s.addToCalendarLink}>
-                        <Calendar className={s.calendarIcon}>Add to Google Calender</Calendar>
-                    </a>
+
+                {statusType === "success" && (
+                    <>
+                        <div className={s.iconCircle}>
+                            <BadgeCheck className={s.checkIcon} />
+                        </div>
+                        <p className={s.statusLabel}>Booking Confirmed</p>
+                        <h1 className={s.heading}>{message}</h1>
+
+                        {booking && (
+                            <div className={s.bookingDetails}>
+                                <div className={s.serviceRow}>
+                                    <CalendarDays className={s.calendarDaysIcon} />
+                                    <p className={s.serviceName}>
+                                        {booking.serviceId?.name || "Appointment"}
+                                    </p>
+                                </div>
+                                <p className={s.detailText}>
+                                    {booking.date} • {booking.startTime} - {booking.endTime}
+                                </p>
+                                <p className={s.statusText}>
+                                    Status: {booking.status?.replace(/_/g, " ")}
+                                </p>
+                            </div>
+                        )}
+
+                        {calendarUrl && (
+                            <a
+                                href={calendarUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={s.addToCalendarLink}
+                            >
+                                <Calendar className={s.calendarIcon} />
+                                <span>Add to Google Calendar</span>
+                            </a>
+                        )}
+                    </>
                 )}
-                <Link to={searchParams.get("slug") ? `/book/${searchParams.get("slug")}` : "/"} className={s.backLink}>
-                <ArrowLeft className={s.backIcon}></ArrowLeft>
-                Back to bookings page</Link>
+
+                {statusType === "error" && (
+                    <>
+                        <div className={s.iconCircleError || s.iconCircle}>
+                            <XCircle className={s.errorIcon || s.checkIcon} />
+                        </div>
+                        <p className={s.statusLabelError || s.statusLabel}>
+                            Verification Failed
+                        </p>
+                        <h1 className={s.heading}>{message}</h1>
+                        <p className={s.description || "mt-2 text-sm text-slate-500"}>
+                            If your payment was deducted, please check your bank account or reach out for assistance.
+                        </p>
+                    </>
+                )}
+
+                <Link
+                    to={slug ? `/book/${slug}` : "/"}
+                    className={s.backLink}
+                >
+                    <ArrowLeft className={s.backIcon} />
+                    <span>Back to booking page</span>
+                </Link>
             </main>
         </div>
-    )
+    );
 }

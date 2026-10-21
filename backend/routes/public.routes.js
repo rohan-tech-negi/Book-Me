@@ -14,6 +14,7 @@ import {
 const router = express.Router();
 
 router.get("/booking/status", getBookingStatus);
+router.get("/booking/cancel-payment", cancelPublicBookingPayment);
 router.post("/booking/cancel-payment", cancelPublicBookingPayment);
 router.get("/:slug", getPublicBusiness);
 router.get("/:slug/slots", getPublicSlots || getPublicSLots);
