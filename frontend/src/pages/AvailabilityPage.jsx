@@ -27,3 +27,20 @@ const dayIcons = [
 
 
 const defaultSlot = {startTime: "09:00", endTime: "17:00"}
+
+export default function AvailabilityPage() {
+    const [availability, setAvailability] = useState([])
+    const [selectedDay, useSelectedDay] = useState(1)
+    const [slots, setSlots] = useState([defaultSlot])
+    const [message, setMessage] = useState("")
+    const [loading, setLoadin] = useState(false)
+    const showToast = useToast()
+
+
+    const getSlotsForDays = (items, day) => {
+        const dayAvailability = itms.find((item) => item.dayOfWeek === day)
+        return dayAvailability?.slots?.length ? dayAvailability.slots : [defaultSlot]
+    }
+
+    
+}
