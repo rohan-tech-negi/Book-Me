@@ -48,6 +48,18 @@ export default function AvailabilityPage() {
     )
 
     useEffect(() => {
-        consy 
-    })
+        const loadInitialAvailability = async() => {
+            try {
+                const {data} = await listAvailability()
+                const items = data.availability || []
+                setAvailability(items)
+                setSlots(getSlotsForDays(items, selectedDay))
+            } catch (error) {
+                setMessage(
+                    error.response?.data?.message || "could ot load availability"
+                )
+            }
+        }
+        loadInitialAvailability()
+    }, [selectedDay])
 }
