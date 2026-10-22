@@ -165,12 +165,20 @@ export default function AvailabilityPage() {
     return `${String(displayHour).padStart(2, "0")}:${m} ${ampm}`;
   };
 
- 
+  return(
+    <AppLayout>
 
+      <div className={s.mainGrid}>
+        <section className={s.leftTopArea}>
+          <div >
+            <p className={s.availabilityLabel}>Availability</p>
+            <h1 className={s.mainHeading}>
 
-  
-
-        {/* RIGHT: Time slots */}
+            </h1>
+          </div>
+        </section>  
+      </div>
+ {/* RIGHT: Time slots */}
         <section className={s.rightSection}>
           <div className={s.rightTopBar}>
             <div className={s.rightTopLeft}>
@@ -261,5 +269,14 @@ export default function AvailabilityPage() {
 
           {message && <p className={s.message}>{message}</p>}
         </section>
+    </AppLayout>
+  )
+
+ 
+
+
+  
+
+       
  
 }
