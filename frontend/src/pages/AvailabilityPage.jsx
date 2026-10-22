@@ -30,7 +30,7 @@ const defaultSlot = {startTime: "09:00", endTime: "17:00"}
 
 export default function AvailabilityPage() {
     const [availability, setAvailability] = useState([])
-    const [selectedDay, useSelectedDay] = useState(1)
+    const [selectedDay, setSelectedDay] = useState(1)
     const [slots, setSlots] = useState([defaultSlot])
     const [message, setMessage] = useState("")
     const [loading, setLoading] = useState(false)
@@ -169,14 +169,43 @@ export default function AvailabilityPage() {
     <AppLayout>
 
       <div className={s.mainGrid}>
-        <section className={s.leftTopArea}>
+        <section>
+          <div className={s.leftTopArea}>
           <div >
             <p className={s.availabilityLabel}>Availability</p>
             <h1 className={s.mainHeading}>
-
+              Set the hours customers can{" "}
+              <span className={s.gradientText}>Choose.</span>
             </h1>
+            <p className={s.subText}>
+              keep it simple: select a weekday, add one or more time windows, than save.
+            </p>
           </div>
-        </section>  
+          <div className={s.illustrationContainer}>
+            <img src={p5Image} className={s.illustrationImg} alt="" />
+          </div>
+        </div>  
+        <div className={s.dayListContainer}>
+          {days.map((day, index) => {
+            const icon = dayIcons[index];
+            const isSelected = selectedDay === index;
+            const hasSaved = availability.some(
+              (item => item.dayOfWeek === index && item.slots?.length > 0)
+            )
+            return(
+              <button
+              key={day}
+              type="button"
+              onClick={() => {
+                setSelectedDay(index);
+                setSlots(getSlotsForDays(availability, index))
+              }} className={isSelected ? s.dayButtonActive : s.dayButtonInactive}>
+
+              </button>
+            )
+          })}
+        </div>
+        </section>
       </div>
  {/* RIGHT: Time slots */}
         <section className={s.rightSection}>
