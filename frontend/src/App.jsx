@@ -7,6 +7,7 @@ import ProfilePage from "./pages/profilePage"
 import BookingsPage from "./pages/bookingsPage"
 import BookingSuccessPage from "./pages/BookingSuccessPage"
 import BookingCancelledPage from "./pages/BookingCancelledPage"
+import AvailabilityPage from "./pages/AvailabilityPage"
 
 
 const ProtectedRoute  = ({children}) => {
@@ -48,6 +49,7 @@ const App = () => {
       <Route path="/" element={<ProtectedRoute><DashboardPage></DashboardPage></ProtectedRoute>}></Route>
       <Route path="/bookings" element={<ProtectedRoute><BookingsPage></BookingsPage></ProtectedRoute>}></Route>
       <Route path="/booking/success" element={<BookingSuccessPage></BookingSuccessPage>}></Route>
+      <Route path="/availability" element={<ProtectedRoute><AvailabilityPage></AvailabilityPage></ProtectedRoute>}></Route>
       <Route path="/booking/cancelled" element={<BookingCancelledPage></BookingCancelledPage>}></Route>
       <Route path="/profile" element={<ProtectedRoute><ProfilePage></ProfilePage></ProtectedRoute>}></Route>
       <Route path="/login" element={<PublicOnlyRoute><AuthPage></AuthPage></PublicOnlyRoute>}></Route>
