@@ -3,7 +3,7 @@ import p5Image from "../assets/p5.img"
 import AppLayout from "../components/AppLayout"
 import {useToast} from "../context/ToastContext"
 import {listAvailability, saveAvailability} from "../api/availability"
-import { BadgeCheck, Calendar, CalendarDays, ArrowLeft, Trash2, Sparkles, Sun, Plus, Clock, Save } from "lucide-react";
+import { BadgeCheck, Calendar, CalendarDays, ArrowLeft, Trash2, Sparkles, Sun, Plus, Clock, Save, Icon } from "lucide-react";
 import { availabilityPageStyles as s } from "../assests/dummy"
 
 const days = [
@@ -200,12 +200,37 @@ export default function AvailabilityPage() {
                 setSelectedDay(index);
                 setSlots(getSlotsForDays(availability, index))
               }} className={isSelected ? s.dayButtonActive : s.dayButtonInactive}>
+                <div className="slex items-center gap-3">
+                  <div className={
+                    isSelected ? s.dayIconContainerActive : s.dayIconContainerInactive
+                  }>
+                    <Icon className={s.dayIcon}></Icon>
+
+                  </div>
+                  <span className={isSelected ? s.dayLabelActive : s.dayLabelInactive}>
+                    {day}
+                  </span>
+                </div>
+                {isSelected ? (
+                  <div className={s.dayCheckActiveContainer}>
+                      <BadgeCheck className={s.dayCheckActiveIcon}></BadgeCheck>
+                  </div>
+                ) : (
+                  <div className={s.dayIconContainerInactive}>
+
+                  </div>
+                )}
 
               </button>
             )
           })}
         </div>
+        <div className={s.infoBox}>
+          <Clock className={s.infoBoxIcon}></Clock>
+          <p className={s.infoBoxText}>Cusotmer will only see <span className={s.infoBoxStrong}>Available day</span> and times bookings</p>
+        </div>
         </section>
+        
       </div>
  {/* RIGHT: Time slots */}
         <section className={s.rightSection}>
