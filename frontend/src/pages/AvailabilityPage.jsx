@@ -3,7 +3,7 @@ import p5Image from "../assets/p5.img"
 import AppLayout from "../components/AppLayout"
 import {useToast} from "../context/ToastContext"
 import {listAvailability, saveAvailability} from "../api/availability"
-import { BadgeCheck, Calendar, CalendarDays, ArrowLeft, Trash2, Sparkles, Sun } from "lucide-react";
+import { BadgeCheck, Calendar, CalendarDays, ArrowLeft, Trash2, Sparkles, Sun, Plus, Clock, Save } from "lucide-react";
 import { availabilityPageStyles as s } from "../assests/dummy"
 
 const days = [
@@ -33,16 +33,16 @@ export default function AvailabilityPage() {
     const [selectedDay, useSelectedDay] = useState(1)
     const [slots, setSlots] = useState([defaultSlot])
     const [message, setMessage] = useState("")
-    const [loading, setLoadin] = useState(false)
+    const [loading, setLoading] = useState(false)
     const showToast = useToast()
 
 
     const getSlotsForDays = (items, day) => {
-        const dayAvailability = itms.find((item) => item.dayOfWeek === day)
+        const dayAvailability = items.find((item) => item.dayOfWeek === day)
         return dayAvailability?.slots?.length ? dayAvailability.slots : [defaultSlot]
     }
 
-    const currecntDaySummary = useMemo(
+    const currentDaySummary = useMemo(
         () => availability.find((item) => item.dayOfWeek === selectedDay),
         [availability, selectedDay]
     )
