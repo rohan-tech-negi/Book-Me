@@ -1,5 +1,5 @@
 import { useEffect , useMemo, useState} from "react"
-import p5Image from "../assets/p5.img"
+import p5Image from "../assets/P5.img"
 import AppLayout from "../components/AppLayout"
 import {useToast} from "../context/ToastContext"
 import {listAvailability, saveAvailability} from "../api/availability"
