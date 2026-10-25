@@ -1,69 +1,68 @@
-import { useEffect , useMemo, useState} from "react"
-import p5Image from "../assets/P5.img"
-import AppLayout from "../components/AppLayout"
-import {useToast} from "../context/ToastContext"
-import {listAvailability, saveAvailability} from "../api/availability"
-import { BadgeCheck, Calendar, CalendarDays, ArrowLeft, Trash2, Sparkles, Sun, Plus, Clock, Save, Icon } from "lucide-react";
-import { availabilityPageStyles as s } from "../assests/dummy"
+import { useEffect, useMemo, useState } from "react";
+import p5Image from "../assets/P5.png";
+import AppLayout from "../components/AppLayout";
+import { useToast } from "../context/ToastContext";
+import { listAvailability, saveAvailability } from "../api/availability";
+import { BadgeCheck, CalendarDays, Trash2, Sun, Plus, Clock, Save } from "lucide-react";
+import { availabilityPageStyles as s } from "../assests/dummy";
 
 const days = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Friday",
-    "Saturday"
-]
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
 
 const dayIcons = [
-    Sun,
-    CalendarDays,
-    CalendarDays,
-    CalendarDays,
-    CalendarDays,
-    CalendarDays,
-    Sun
-]
+  Sun,
+  CalendarDays,
+  CalendarDays,
+  CalendarDays,
+  CalendarDays,
+  CalendarDays,
+  Sun,
+];
 
-
-const defaultSlot = {startTime: "09:00", endTime: "17:00"}
+const defaultSlot = { startTime: "09:00", endTime: "17:00" };
 
 export default function AvailabilityPage() {
-    const [availability, setAvailability] = useState([])
-    const [selectedDay, setSelectedDay] = useState(1)
-    const [slots, setSlots] = useState([defaultSlot])
-    const [message, setMessage] = useState("")
-    const [loading, setLoading] = useState(false)
-    const showToast = useToast()
+  const [availability, setAvailability] = useState([]);
+  const [selectedDay, setSelectedDay] = useState(1);
+  const [slots, setSlots] = useState([defaultSlot]);
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const showToast = useToast();
 
+  const getSlotsForDays = (items, day) => {
+    const dayAvailability = items.find((item) => item.dayOfWeek === day);
+    return dayAvailability?.slots?.length ? dayAvailability.slots : [defaultSlot];
+  };
 
-    const getSlotsForDays = (items, day) => {
-        const dayAvailability = items.find((item) => item.dayOfWeek === day)
-        return dayAvailability?.slots?.length ? dayAvailability.slots : [defaultSlot]
-    }
+  const currentDaySummary = useMemo(
+    () => availability.find((item) => item.dayOfWeek === selectedDay),
+    [availability, selectedDay]
+  );
 
-    const currentDaySummary = useMemo(
-        () => availability.find((item) => item.dayOfWeek === selectedDay),
-        [availability, selectedDay]
-    )
+  useEffect(() => {
+    const loadInitialAvailability = async () => {
+      try {
+        const { data } = await listAvailability();
+        const items = data.availability || [];
+        setAvailability(items);
+        setSlots(getSlotsForDays(items, selectedDay));
+      } catch (error) {
+        setMessage(
+          error.response?.data?.message || "Could not load availability"
+        );
+      }
+    };
+    loadInitialAvailability();
+  }, [selectedDay]);
 
-    useEffect(() => {
-        const loadInitialAvailability = async() => {
-            try {
-                const {data} = await listAvailability()
-                const items = data.availability || []
-                setAvailability(items)
-                setSlots(getSlotsForDays(items, selectedDay))
-            } catch (error) {
-                setMessage(
-                    error.response?.data?.message || "could ot load availability"
-                )
-            }
-        }
-        loadInitialAvailability()
-    }, [selectedDay])
-
-    const updateSlot = (index, field, value) => {
+  const updateSlot = (index, field, value) => {
     let newSlot = { ...slots[index], [field]: value };
 
     if (newSlot.startTime >= newSlot.endTime) {
@@ -88,13 +87,13 @@ export default function AvailabilityPage() {
     if (isOverlapping) {
       showToast(
         "Overlap detected: Time falls within an existing slot.",
-        "error",
+        "error"
       );
       return;
     }
 
     setSlots((prev) =>
-      prev.map((slot, slotIndex) => (slotIndex === index ? newSlot : slot)),
+      prev.map((slot, slotIndex) => (slotIndex === index ? newSlot : slot))
     );
   };
 
@@ -105,7 +104,7 @@ export default function AvailabilityPage() {
     }
 
     const sorted = [...slots].sort((a, b) =>
-      a.endTime.localeCompare(b.endTime),
+      a.endTime.localeCompare(b.endTime)
     );
     const latest = sorted[sorted.length - 1];
 
@@ -139,17 +138,17 @@ export default function AvailabilityPage() {
       });
       setAvailability((prev) => {
         const withoutDay = prev.filter(
-          (item) => item.dayOfWeek !== selectedDay,
+          (item) => item.dayOfWeek !== selectedDay
         );
         return [...withoutDay, data.availability].sort(
-          (a, b) => a.dayOfWeek - b.dayOfWeek,
+          (a, b) => a.dayOfWeek - b.dayOfWeek
         );
       });
       showToast("Availability saved");
     } catch (error) {
       showToast(
         error.response?.data?.message || "Could not save availability",
-        "error",
+        "error"
       );
     } finally {
       setLoading(false);
@@ -165,74 +164,81 @@ export default function AvailabilityPage() {
     return `${String(displayHour).padStart(2, "0")}:${m} ${ampm}`;
   };
 
-  return(
+  return (
     <AppLayout>
-
       <div className={s.mainGrid}>
         <section>
           <div className={s.leftTopArea}>
-          <div >
-            <p className={s.availabilityLabel}>Availability</p>
-            <h1 className={s.mainHeading}>
-              Set the hours customers can{" "}
-              <span className={s.gradientText}>Choose.</span>
-            </h1>
-            <p className={s.subText}>
-              keep it simple: select a weekday, add one or more time windows, than save.
+            <div>
+              <p className={s.availabilityLabel}>Availability</p>
+              <h1 className={s.mainHeading}>
+                Set the hours customers can{" "}
+                <span className={s.gradientText}>Choose.</span>
+              </h1>
+              <p className={s.subText}>
+                Keep it simple: select a weekday, add one or more time windows, then save.
+              </p>
+            </div>
+            <div className={s.illustrationContainer}>
+              <img src={p5Image} className={s.illustrationImg} alt="" />
+            </div>
+          </div>
+          <div className={s.dayListContainer}>
+            {days.map((day, index) => {
+              const DayIcon = dayIcons[index] || CalendarDays;
+              const isSelected = selectedDay === index;
+              const hasSaved = availability.some(
+                (item) => item.dayOfWeek === index && item.slots?.length > 0
+              );
+              return (
+                <button
+                  key={day}
+                  type="button"
+                  title={hasSaved ? `${day} (hours configured)` : day}
+                  onClick={() => {
+                    setSelectedDay(index);
+                    setSlots(getSlotsForDays(availability, index));
+                  }}
+                  className={isSelected ? s.dayButtonActive : s.dayButtonInactive}
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={
+                        isSelected
+                          ? s.dayIconContainerActive
+                          : s.dayIconContainerInactive
+                      }
+                    >
+                      <DayIcon className={s.dayIcon} />
+                    </div>
+                    <span
+                      className={
+                        isSelected ? s.dayLabelActive : s.dayLabelInactive
+                      }
+                    >
+                      {day}
+                    </span>
+                  </div>
+                  {isSelected ? (
+                    <div className={s.dayCheckActiveContainer}>
+                      <BadgeCheck className={s.dayCheckActiveIcon} />
+                    </div>
+                  ) : (
+                    <div className={s.dayCheckInactiveCircle} />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          <div className={s.infoBox}>
+            <Clock className={s.infoBoxIcon} />
+            <p className={s.infoBoxText}>
+              Customers will only see <span className={s.infoBoxStrong}>Available days</span> and times for bookings
             </p>
           </div>
-          <div className={s.illustrationContainer}>
-            <img src={p5Image} className={s.illustrationImg} alt="" />
-          </div>
-        </div>  
-        <div className={s.dayListContainer}>
-          {days.map((day, index) => {
-            const icon = dayIcons[index];
-            const isSelected = selectedDay === index;
-            const hasSaved = availability.some(
-              (item => item.dayOfWeek === index && item.slots?.length > 0)
-            )
-            return(
-              <button
-              key={day}
-              type="button"
-              onClick={() => {
-                setSelectedDay(index);
-                setSlots(getSlotsForDays(availability, index))
-              }} className={isSelected ? s.dayButtonActive : s.dayButtonInactive}>
-                <div className="slex items-center gap-3">
-                  <div className={
-                    isSelected ? s.dayIconContainerActive : s.dayIconContainerInactive
-                  }>
-                    <Icon className={s.dayIcon}></Icon>
-
-                  </div>
-                  <span className={isSelected ? s.dayLabelActive : s.dayLabelInactive}>
-                    {day}
-                  </span>
-                </div>
-                {isSelected ? (
-                  <div className={s.dayCheckActiveContainer}>
-                      <BadgeCheck className={s.dayCheckActiveIcon}></BadgeCheck>
-                  </div>
-                ) : (
-                  <div className={s.dayIconContainerInactive}>
-
-                  </div>
-                )}
-
-              </button>
-            )
-          })}
-        </div>
-        <div className={s.infoBox}>
-          <Clock className={s.infoBoxIcon}></Clock>
-          <p className={s.infoBoxText}>Cusotmer will only see <span className={s.infoBoxStrong}>Available day</span> and times bookings</p>
-        </div>
         </section>
-        
-      </div>
- {/* RIGHT: Time slots */}
+
+        {/* RIGHT: Time slots */}
         <section className={s.rightSection}>
           <div className={s.rightTopBar}>
             <div className={s.rightTopLeft}>
@@ -264,7 +270,7 @@ export default function AvailabilityPage() {
               <div key={`${index}-${slot.startTime}`} className={s.slotCard}>
                 <div className={s.slotGrid}>
                   <label className={s.slotLabel}>
-                    Start
+                    Start {slot.startTime && <span className="text-xs text-slate-400 font-normal">({formatTime(slot.startTime)})</span>}
                     <div className={s.timeInputContainer}>
                       <Clock className={s.timeInputClockIcon} />
                       <input
@@ -279,7 +285,7 @@ export default function AvailabilityPage() {
                   </label>
 
                   <label className={s.slotLabel}>
-                    End
+                    End {slot.endTime && <span className="text-xs text-slate-400 font-normal">({formatTime(slot.endTime)})</span>}
                     <div className={s.timeInputContainer}>
                       <Clock className={s.timeInputClockIcon} />
                       <input
@@ -323,14 +329,7 @@ export default function AvailabilityPage() {
 
           {message && <p className={s.message}>{message}</p>}
         </section>
+      </div>
     </AppLayout>
-  )
-
- 
-
-
-  
-
-       
- 
+  );
 }
