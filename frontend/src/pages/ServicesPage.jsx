@@ -121,6 +121,16 @@ export default function ServicePage () {
     }
 
     const confirmDelete = async() => {
-        
+        setDeleteConfirm(services)
+    }
+
+    const executeDelete = async() =>{
+        if(!deleteConfirm) return ;
+        try {
+            await deleteServices(deleteConfirm._id)
+            
+        } catch (error) {
+            
+        }
     }
 }
