@@ -114,5 +114,13 @@ export default function ServicePage () {
         })
         setMessage("")
     }
-    const cancelEditing
+    const cancelEditing = () => {
+        setEditingId("")
+        setForm(emptyForm)
+        setMessage("")
+    }
+
+    const confirmDelete = async() => {
+        
+    }
 }
