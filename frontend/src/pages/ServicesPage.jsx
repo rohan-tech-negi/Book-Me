@@ -103,5 +103,16 @@ export default function ServicePage () {
         loadServices()
     }
 
-    const startEditing
+    const startEditing = (service) => {
+        setEditingId(service._id)
+        setForm({
+            name: service.name,
+            duration: service.duration,
+            price: service.price,
+            description: service.duration || "",
+            icon: service.icon || "C1.png"
+        })
+        setMessage("")
+    }
+    const cancelEditing
 }
