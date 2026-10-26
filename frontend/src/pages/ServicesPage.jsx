@@ -98,5 +98,10 @@ export default function ServicePage () {
         }
     }
 
-    const toggleServices
+    const toggleServices = async(service) =>{
+        await updateServices(service._id, {isActive: !service.isActive})
+        loadServices()
+    }
+
+    const startEditing
 }
