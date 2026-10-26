@@ -57,10 +57,46 @@ export default function ServicePage () {
     useEffect(()=>{
         const loadInitialServices = async() => {
             try {
-                const {data} = 
+                const {data} = await listServices()
+                applyServices(data.services)
             } catch (error) {
-                
+                setMessage(error.response?.data?.message || "Could not load services")
             }
         }
-    })
+        loadInitialServices()
+    },[])
+    const handleChange = (event) => {
+        setForm((prev)=>({
+            ...prev,
+            [event.target.name]: event.target.value
+        }))
+    }
+
+    const handleSubmit = async(event) =>{
+        event.preventDefault()
+        setLoading(true)
+        setMessage("")
+        try {
+            const payload = {
+                ...form,
+                duration:Number(form.duration),
+                price: Number(form.price)
+            }
+            if(editingId){
+                await updateServices(editingId, payload)
+            }else{
+                await createServices(payload)
+            }
+            setForm(emptyForm)
+            setEditingId("")
+            showToast(editingId ? "Service updated successfully" : "Service added successfully")
+            loadServices()
+        } catch (error) {
+            showToast(error.response?.data?.message || "could not save services","error")
+        }finally{
+            setLoading(false)
+        }
+    }
+
+    const toggleServices
 }
