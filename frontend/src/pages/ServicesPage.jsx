@@ -41,4 +41,26 @@ export default function ServicePage () {
     const [deleteConfirm, setDeleteConfirm] = useState(null)
 
     const showToast = useToast()
+
+    const applyServices = (item) => {
+        setServices(item || [])
+    }
+    const loadServices = async() =>{
+        try {
+            const {data} = await listServices()
+            applyServices(data.services)
+        } catch (error) {
+            setMessage(error.message?.data?.message || "Could not load services")
+        }
+    }
+
+    useEffect(()=>{
+        const loadInitialServices = async() => {
+            try {
+                const {data} = 
+            } catch (error) {
+                
+            }
+        }
+    })
 }
