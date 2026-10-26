@@ -13,3 +13,32 @@ import {useToast} from "../context/ToastContext"
 import {createServices, deleteServices, listServices, updateServices} from "../api/service"
 import {servicesPageStyles as s} from "../assests/dummy"
 
+const ICON_MAP = {
+  "C1.png": C1,
+  "C2.png": C2,
+  "C3.png": C3,
+  "C4.png": C4,
+  "C5.png": C5,
+  "C6.png": C6,
+  "C7.png": C7,
+  "C8.png": C8,
+};
+
+const emptyForm = {
+    name: "",
+    duration: 30,
+    price: 0,
+    description: "",
+    icon: "C1.png"
+}
+
+export default function ServicePage () {
+    const [services, setServices] = useState([])
+    const [form, setForm] = useState(emptyForm)
+    const [editingId, setEditingId] = useState("")
+    const [message, setMessage] = useState("")
+    const [loading, setLoading] = useState(false)
+    const [deleteConfirm, setDeleteConfirm] = useState(null)
+
+    const showToast = useToast()
+}
