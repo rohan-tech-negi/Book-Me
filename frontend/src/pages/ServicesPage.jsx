@@ -128,9 +128,13 @@ export default function ServicePage () {
         if(!deleteConfirm) return ;
         try {
             await deleteServices(deleteConfirm._id)
-            
+            if(editingId === deleteConfirm._id) cancelEditing()
+                showToast("Service deleted successfully")
+            loadServices()
         } catch (error) {
-            
+            showToast(error.response?.data?.message || "COuld not delete services", "error")
+        } finally{
+            setDeleteConfirm(null)
         }
     }
 }
