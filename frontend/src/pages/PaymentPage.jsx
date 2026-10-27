@@ -66,6 +66,15 @@ export default function PaymentPage() {
         ifsc: data.payoutDetails?.ifsc || "",
         upiId: data.payoutDetails?.upiId || ""
     }))
+
+    useEffect(() => {
+        loadOverview().catch((error) => {
+            setMessage(
+                error.response?.data?.message || "Could not load payment details"
+            )
+        })
+    }, [])
+    cons
 }
 
 
