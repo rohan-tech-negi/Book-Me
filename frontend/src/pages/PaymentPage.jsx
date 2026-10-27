@@ -93,6 +93,20 @@ export default function PaymentPage() {
         setMessage(
             error.response?.data?.message || " could not save payout details"
         )
+        finally{
+            setLoading(false)
+        }
+    }
+
+    const submitWithdrawl = async(event) => {
+        event.preventDefault()
+        setLoading(true)
+        setMessage("")
+        try {
+            
+        } catch (error) {
+            
+        }
     }
 }
 
