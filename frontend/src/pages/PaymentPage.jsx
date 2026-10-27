@@ -19,5 +19,16 @@ const transactionbLabel = (transaction) => {
     }
     if(transaction.type === "withdrawl_hold")  return "Withdrawl requested"
     if(transaction.type === "withdrawl_reversal") return "Withdrawl returned"
-    if(transaction.description && transaction.description.includes("Booking payout for stripe session")) return "Withdrawl requested"
+    if(transaction.description && transaction.description.includes("Booking payout for stripe session")) {
+        return "Booking payment received"
+    }
+    return transaction.description || transaction.type
 }
+
+const transactionAmount = (transaction) => {
+    if(transaction.type === "withdrawl_hold")
+        return -Math.abs(transaction.amount || 0)
+    return transaction.amount || 0
+}
+
+
