@@ -13,6 +13,7 @@ import {useToast} from "../context/ToastContext"
 import {createServices, deleteServices, listServices, updateServices} from "../api/service"
 import {servicesPageStyles as s} from "../assests/dummy"
 import AppLayout from "../components/AppLayout";
+import { Clock, Eye, EyeOff, FileText, IndianRupee, Layers, Pencil, Plus, Save, Trash2, X } from "lucide-react";
 
 const ICON_MAP = {
   "C1.png": C1,
