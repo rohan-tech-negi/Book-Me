@@ -85,9 +85,14 @@ export default function PaymentPage() {
     }
 
     try {
-        
+        const {data} = await updatePayoutDetails(form)
+        setOverview((prev) => ({...prev, payoutDetails: data.payoutDetails}))
+        setForm((prev) => ({...prev, accountNumber: ""}))
+        setMessage(data.message)
     } catch (error) {
-        
+        setMessage(
+            error.response?.data?.message || " could not save payout details"
+        )
     }
 }
 
