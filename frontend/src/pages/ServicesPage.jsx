@@ -12,6 +12,7 @@ import Applayout from "../components/AppLayout"
 import {useToast} from "../context/ToastContext"
 import {createServices, deleteServices, listServices, updateServices} from "../api/service"
 import {servicesPageStyles as s} from "../assests/dummy"
+import AppLayout from "../components/AppLayout";
 
 const ICON_MAP = {
   "C1.png": C1,
@@ -137,4 +138,11 @@ export default function ServicePage () {
             setDeleteConfirm(null)
         }
     }
+    return (
+        <AppLayout>
+            <div className={s.makeGrid}>
+
+            </div>
+        </AppLayout>
+    )
 }
