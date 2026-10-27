@@ -74,7 +74,9 @@ export default function PaymentPage() {
             )
         })
     }, [])
-    cons
+    const handleChange = (event) => {
+        setForm((prev) => ({...prev, [event.target.name]: event.target.value}))
+    }
 }
 
 
