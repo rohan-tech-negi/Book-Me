@@ -100,7 +100,7 @@ export default function ServicePage () {
         }
     }
 
-    const toggleServices = async(service) =>{
+    const toggleService = async(service) =>{
         await updateServices(service._id, {isActive: !service.isActive})
         loadServices()
     }
