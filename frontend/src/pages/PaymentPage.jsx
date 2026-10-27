@@ -10,3 +10,14 @@ const formatmoney = (amount = 0, currency = "INR") =>
     new Intl.NumberFormat("en-IN", {style: "currency", currency}).format(
         amount/ 100
     )
+const transactionbLabel = (transaction) => {
+    if(transaction.type === "booking_payment"){
+        if(transaction.description && transaction.description.includes ("Booking payment")){
+             return "Booking payment recieved"
+        }
+           return transaction.description || 'Booking payout '
+    }
+    if(transaction.type === "withdrawl_hold")  return "Withdrawl requested"
+    if(transaction.type === "withdrawl_reversal") return "Withdrawl returned"
+    if(transaction.description && transaction.description.includes("Booking payout for stripe session")) return "Withdrawl requested"
+}
