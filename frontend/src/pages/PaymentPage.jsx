@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import p6Image from "../assets/p6.png"
 import { Link } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
@@ -43,6 +43,30 @@ export default function PaymentPage() {
         ifsc: "",
         upiId: ""
     })
+
+    const wallet = overview?.wallet || {};
+    const payoutDetails = overview?.payoutDetails || {};
+    const availableRupees = useMemo(
+        () => ((wallet.available || 0)/ 100).toFixed(2),
+        [wallet.available]
+    )
+    const loadOverview = async() =>{
+        if(!localStorage.getItem("token")){
+            setMessage("Please log in to manage payment details")
+            return 
+        }
+    }
+
+    const {data} = await getPayementOverview();
+    setOverview(data);
+    setForm((prev)=> ({
+        ...prev, 
+        accountHolderName: data.payoutDetails.accountHolderName || "",
+        bankName: data.payoutDetails?.bankName || "",
+        ifsc: data.payoutDetails?.ifsc || "",
+        upiId: data.payoutDetails?.upiId || ""
+    }))
 }
+
 
 
