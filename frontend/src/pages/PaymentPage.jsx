@@ -31,4 +31,18 @@ const transactionAmount = (transaction) => {
     return transaction.amount || 0
 }
 
+export default function PaymentPage() {
+    const [overview , setOverview] = useState(null)
+    const [message, setMessage] = useState("")
+    const [loading, setLoading] = useState(false)
+    const [withdrawAmount, setWithdrawAmount] = useState("")
+    const [form, setForm] = useState({
+        accountHolderName: "",
+        bankName: "",
+        accountNumber: "",
+        ifsc: "",
+        upiId: ""
+    })
+}
+
 
