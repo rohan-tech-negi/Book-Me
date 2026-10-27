@@ -77,6 +77,18 @@ export default function PaymentPage() {
     const handleChange = (event) => {
         setForm((prev) => ({...prev, [event.target.name]: event.target.value}))
     }
+
+    const savePayoutDetails = async(event) => {
+        event.preventDefault()
+        setLoading()
+        setMessage("")
+    }
+
+    try {
+        
+    } catch (error) {
+        
+    }
 }
 
 
