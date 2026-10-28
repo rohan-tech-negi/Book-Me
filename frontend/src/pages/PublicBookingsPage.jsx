@@ -285,3 +285,383 @@ const renderIcon = (service, isActive, customColor) => {
       </div>
     );
   };
+
+  return (
+    <div className={s.pageContainer} style={brandStyleVars}>
+      <main className={s.mainGrid}>
+        {/* LEFT: Business sidebar */}
+        <section className={s.leftPanel}>
+          <div className={s.bgImageContainer}>
+            <img
+              src={bannerImage}
+              alt="3D Visual"
+              className={s.bgImage}
+              style={{
+                WebkitMaskImage:
+                  "linear-gradient(to bottom right, transparent, black 60%)",
+                maskImage:
+                  "linear-gradient(to bottom right, transparent, black 60%)",
+              }}
+            />
+            <div className={s.bgImageOverlay}></div>
+          </div>
+          <div className={s.bgFadeOverlay}></div>
+
+          <div className={s.leftContent}>
+            <div className={s.businessInfoRow}>
+              <div className={s.businessAvatar}>
+                {(business?.businessName || business?.name || "M")
+                  .slice(0, 1)
+                  .toUpperCase()}
+              </div>
+              <p className={s.bookOnlineLabel}>Book online</p>
+            </div>
+
+            <h1 className={s.businessName}>
+              {business?.businessName || business?.name || "Mental Clinic"}
+            </h1>
+            {business?.businessDescription && (
+              <p className={s.businessDesc}>{business.businessDescription}</p>
+            )}
+          </div>
+
+          <div className={s.serviceList}>
+            {services.map((service) => {
+              const isActive = form.serviceId === service._id;
+
+              return (
+                <button
+                  key={service._id}
+                  type="button"
+                  onClick={() =>
+                    setForm((prev) => ({ ...prev, serviceId: service._id }))
+                  }
+                  className={
+                    isActive ? s.serviceBtnActive : s.serviceBtnInactive
+                  }
+                >
+                  {renderIcon(service, isActive, accent)}
+                  <div className={s.serviceTextBlock}>
+                    <span
+                      className={
+                        isActive ? s.serviceNameActive : s.serviceNameInactive
+                      }
+                    >
+                      {service.name}
+                    </span>
+                    <p
+                      className={
+                        isActive
+                          ? s.serviceDetailActive
+                          : s.serviceDetailInactive
+                      }
+                    >
+                      {service.duration} min · ₹
+                      {Number(service.price).toLocaleString()}
+                    </p>
+                    {service.description && (
+                      <p
+                        className={
+                          isActive ? s.serviceDescActive : s.serviceDescInactive
+                        }
+                      >
+                        {service.description}
+                      </p>
+                    )}
+                  </div>
+
+                  <div
+                    className={`${s.selectorIconBase} ${
+                      isActive ? "opacity-100" : "opacity-0"
+                    }`}
+                    style={{ backgroundColor: accent }}
+                  >
+                    <Check className="w-3.5 h-3.5 text-white" />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* RIGHT: Booking form */}
+        <section className={s.rightPanel}>
+          <h2 className={s.bookingTitle}>Choose your appointment</h2>
+
+          {selectedService ? (
+            <p className={s.selectedServiceInfo}>
+              <Clock className="h-4 w-4" style={{ color: accent }} />
+              <span style={{ color: accent }}>{selectedService.name}</span>
+              <span className="text-slate-300">·</span>
+              {selectedService.duration} minutes
+              <span className="text-slate-300">·</span>₹
+              {Number(selectedService.price).toLocaleString()}
+            </p>
+          ) : (
+            <p className={s.noServiceText}>Select a service to begin</p>
+          )}
+
+          <form onSubmit={handleSubmit} className={s.form}>
+            {/* Date */}
+            <div>
+              <label className={s.inputLabel}>Date</label>
+              <div className={s.inputWrapper}>
+                <CalendarDays className={s.inputIcon} />
+                <input
+                  type="date"
+                  name="date"
+                  min={today}
+                  value={form.date}
+                  onChange={handleChange}
+                  className={s.dateInput}
+                  style={{ "--tw-ring-color": accent }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = accent;
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = "#e2e8f0";
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Available times */}
+            <div className="pt-2">
+              <p className={s.inputLabel}>Available times</p>
+              <div className={s.timeSlotGrid}>
+                {slots.map((slot) => {
+                  const isSlotSelected =
+                    selectedSlot?.startTime === slot.startTime;
+                  return (
+                    <button
+                      key={`${slot.startTime}-${slot.endTime}`}
+                      type="button"
+                      onClick={() => setSelectedSlot(slot)}
+                      className={`${s.slotBtnBase} ${
+                        isSlotSelected ? s.slotBtnSelected : s.slotBtnUnselected
+                      }`}
+                      style={
+                        isSlotSelected ? { backgroundColor: accent } : undefined
+                      }
+                    >
+                      {slot.startTime}
+                      {isSlotSelected && <BadgeCheck className="h-4 w-4" />}
+                    </button>
+                  );
+                })}
+              </div>
+              {slots.length === 0 && (
+                <p className={s.noSlotsText}>
+                  No times available for this date.
+                </p>
+              )}
+            </div>
+
+            {/* Name & Email */}
+            <div className={s.nameEmailGrid}>
+              <div>
+                <label className={s.inputLabel}>Your name</label>
+                <div className={s.inputWrapper}>
+                  <User className={s.inputIcon} />
+                  <input
+                    name="customerName"
+                    value={form.customerName}
+                    onChange={handleChange}
+                    placeholder="Enter your name"
+                    className={s.textInput}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = accent;
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = "#e2e8f0";
+                    }}
+                  />
+                </div>
+              </div>
+              <div>
+                <label className={s.inputLabel}>Email address</label>
+                <div className={s.inputWrapper}>
+                  <Mail className={s.inputIcon} />
+                  <input
+                    name="customerEmail"
+                    type="email"
+                    value={form.customerEmail}
+                    onChange={handleChange}
+                    placeholder="Enter your email"
+                    className={s.emailInput}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = accent;
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = "#e2e8f0";
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* OTP */}
+            <div className={s.otpBlock}>
+              <label className={s.otpLabel} style={{ color: accent }}>
+                Email verification code
+              </label>
+              <div className={s.otpRow}>
+                <input
+                  name="emailOtp"
+                  inputMode="numeric"
+                  maxLength={6}
+                  value={form.emailOtp}
+                  onChange={handleChange}
+                  className={s.otpInput}
+                  placeholder="Enter 6-digit code"
+                  autoComplete="one-time-code"
+                  onFocus={(e) => {
+                    e.target.style.borderColor = accent;
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = "#e2e8f0";
+                  }}
+                />
+                {otpVerified ? (
+                  <button
+                    type="button"
+                    disabled
+                    className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-emerald-500 text-white text-sm font-semibold cursor-default"
+                  >
+                    <BadgeCheck className="w-4 h-4" />
+                    Verified
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={sendBookingOtp}
+                    disabled={
+                      otpLoading || !form.customerEmail || otpCooldown > 0
+                    }
+                    className={s.otpButton}
+                  >
+                    {otpLoading
+                      ? "Sending..."
+                      : otpCooldown > 0
+                        ? `Resend code (${otpCooldown}s)`
+                        : otpSentTo === form.customerEmail.trim().toLowerCase()
+                          ? "Resend code"
+                          : "Send code"}
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Avatar selector */}
+            <div className="pt-2">
+              <label className={s.inputLabel}>Choose your avatar</label>
+              <div className={s.avatarGrid}>
+                {Object.keys(AVATAR_MAP)
+                  .slice(0, 15)
+                  .map((avatarName) => (
+                    <button
+                      key={avatarName}
+                      type="button"
+                      onClick={() =>
+                        setForm((prev) => ({
+                          ...prev,
+                          customerAvatar: avatarName,
+                        }))
+                      }
+                      className={`${s.avatarBtnBase} ${
+                        form.customerAvatar === avatarName
+                          ? s.avatarBtnSelected
+                          : s.avatarBtnUnselected
+                      }`}
+                      style={
+                        form.customerAvatar === avatarName
+                          ? { borderColor: accent, "--tw-ring-color": accent }
+                          : undefined
+                      }
+                    >
+                      <img
+                        src={AVATAR_MAP[avatarName]}
+                        alt="Customer Avatar"
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  ))}
+              </div>
+            </div>
+
+            {/* Notes */}
+            <div className="pt-2">
+              <label className={s.inputLabel}>
+                Notes{" "}
+                <span className="font-medium text-slate-400 ml-1">
+                  (Optional)
+                </span>
+              </label>
+              <textarea
+                name="notes"
+                rows={3}
+                value={form.notes}
+                onChange={handleChange}
+                placeholder="Add any notes or special requests..."
+                className={s.notesTextarea}
+                onFocus={(e) => {
+                  e.target.style.borderColor = accent;
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = "#e2e8f0";
+                }}
+              />
+            </div>
+
+            {/* Submit */}
+            <div className="pt-4">
+              <button
+                type="submit"
+                disabled={loading}
+                className={s.submitButton}
+                style={{ backgroundColor: accent }}
+              >
+                <Lock className="h-4.5 w-4.5" />
+                {loading
+                  ? "Preparing..."
+                  : Number(selectedService?.price || 0) > 0
+                    ? `Pay ₹${Number(selectedService.price).toLocaleString()} and Book Appointment`
+                    : "Confirm booking"}
+              </button>
+
+              <p className={s.securePaymentText}>
+                <Shield className="h-4 w-4 text-slate-400" />
+                Secure payments powered by Stripe
+              </p>
+            </div>
+
+            {message && (
+              <div
+                className={`${s.messageBase} ${
+                  message.toLowerCase().includes("confirmed") ||
+                  message.toLowerCase().includes("sent")
+                    ? s.messageSuccess
+                    : s.messageInfo
+                }`}
+              >
+                {message}
+              </div>
+            )}
+
+            {calendarUrl && (
+              <a
+                href={calendarUrl}
+                target="_blank"
+                rel="noreferrer"
+                className={s.calendarLink}
+                style={{ color: accent }}
+              >
+                Add to Google Calendar
+              </a>
+            )}
+          </form>
+        </section>
+      </main>
+    </div>
+  );
+}
