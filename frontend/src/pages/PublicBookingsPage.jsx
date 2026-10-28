@@ -271,3 +271,17 @@ export default function PublicBookingPage() {
       setLoading(false);
     }
   };
+const renderIcon = (service, isActive, customColor) => {
+    return (
+      <div
+        className={s.serviceIconBase}
+        style={{ boxShadow: isActive ? `0 0 0 2px ${customColor}` : "none" }}
+      >
+        <img
+          src={ICON_MAP[service.icon || "C1.png"]}
+          alt={service.name}
+          className="w-full h-full object-cover"
+        />
+      </div>
+    );
+  };
