@@ -211,3 +211,63 @@ export default function PublicBookingPage() {
       [name]: value,
     }));
   };
+  const sendBookingOtp = async () => {
+    if (!form.customerEmail) {
+      setMessage("Enter your email first");
+      return;
+    }
+
+    setOtpLoading(true);
+    setMessage("");
+
+    try {
+      await requestPublicBookingOtp(slug, form.customerEmail);
+      setOtpSentTo(form.customerEmail.trim().toLowerCase());
+      setOtpCooldown(30);
+      setMessage("Verification code sent to your email");
+    } catch (error) {
+      setMessage(
+        error.response?.data?.message || "Could not send verification code",
+      );
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    if (!selectedSlot) {
+      setMessage("Choose a time slot");
+      return;
+    }
+
+    setLoading(true);
+    setMessage("");
+
+    try {
+      const { data } = await createPublicBooking(slug, {
+        ...form,
+        startTime: selectedSlot.startTime,
+        endTime: selectedSlot.endTime,
+      });
+
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+        return;
+      }
+
+      setMessage(
+        data.customerCalendarUrl
+          ? "Your booking is confirmed. You can add it to Google Calendar below."
+          : "Your booking is confirmed",
+      );
+      setCalendarUrl(data.customerCalendarUrl || "");
+      setSelectedSlot(null);
+      setOtpVerified(true);
+    } catch (error) {
+      setMessage(error.response?.data?.message || "Could not create booking");
+    } finally {
+      setLoading(false);
+    }
+  };
