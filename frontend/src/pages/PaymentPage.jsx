@@ -109,9 +109,15 @@ export default function PaymentPage() {
             setWithdrawAmount("")
             await loadOverview()
         } catch (error) {
-            
+            setMessage(
+                error.response?.data?.message || "Could not request withdrawl"
+            )
+        }finally {
+            setLoading(false)
         }
     }
+
+    return
 }
 
 
