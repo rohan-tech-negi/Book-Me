@@ -10,8 +10,8 @@ const formatmoney = (amount = 0, currency = "INR") =>
     new Intl.NumberFormat("en-IN", {style: "currency", currency}).format(
         amount/ 100
     )
-const transactionbLabel = (transaction) => {
-    if(transaction.type === "booking_payment"){
+const transactionLabel = (transaction) => {
+    if(transaction.type === "booking_payout"){
         if(transaction.description && transaction.description.includes ("Booking payment")){
              return "Booking payment recieved"
         }
@@ -80,7 +80,7 @@ export default function PaymentPage() {
 
     const savePayoutDetails = async(event) => {
         event.preventDefault()
-        setLoading()
+        setLoading(true)
         setMessage("")
     }
 
