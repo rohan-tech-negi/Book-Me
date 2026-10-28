@@ -48,7 +48,7 @@ import A16 from "../assets/avatars/A16.png";
 import {
   getBrandThemeStyle,
   publicBookingPageStyles as s,
-} from "../assets/dummyStyles";
+} from "../assests/dummy";
 
 const today = new Date().toISOString().slice(0, 10);
 
