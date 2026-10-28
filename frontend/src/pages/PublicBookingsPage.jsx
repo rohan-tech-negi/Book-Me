@@ -88,3 +88,95 @@ const themeBannerImages = {
   amber: yellowBanner,
   slate: whiteBanner,
 };
+
+
+
+export default function PublicBookingPage() {
+  const { slug } = useParams();
+  const [business, setBusiness] = useState(null);
+  const [services, setServices] = useState([]);
+  const [slots, setSlots] = useState([]);
+  const [selectedSlot, setSelectedSlot] = useState(null);
+  const [message, setMessage] = useState("");
+  const [calendarUrl, setCalendarUrl] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [otpSentTo, setOtpSentTo] = useState("");
+  const [otpVerified, setOtpVerified] = useState(false);
+  const [otpCooldown, setOtpCooldown] = useState(0);
+  const [form, setForm] = useState({
+    serviceId: "",
+    date: today,
+    customerName: "",
+    customerEmail: "",
+    customerAvatar: "A1.png",
+    emailOtp: "",
+    notes: "",
+  });
+
+  const selectedService = useMemo(
+    () => services.find((service) => service._id === form.serviceId),
+    [services, form.serviceId],
+  );
+
+  const brandTheme = getBrandThemeStyle(business?.brandTheme);
+  const accent = business?.brandAccent || brandTheme.accent;
+  const brandStyleVars = {
+    "--brand-accent": accent,
+    "--brand-panel": brandTheme.panel,
+  };
+  const bannerImage = themeBannerImages[business?.brandTheme] || greenBanner;
+
+  useEffect(() => {
+    if (otpCooldown <= 0) return;
+    const interval = setInterval(() => {
+      setOtpCooldown((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [otpCooldown]);
+
+  useEffect(() => {
+    const loadBusiness = async () => {
+      try {
+        const { data } = await getPublicBusiness(slug);
+        setBusiness(data.business);
+        setServices(data.services || []);
+        setForm((prev) => ({
+          ...prev,
+          serviceId: data.services?.[0]?._id || "",
+        }));
+      } catch (error) {
+        setMessage(
+          error.response?.data?.message || "Could not load booking page",
+        );
+      }
+    };
+
+    loadBusiness();
+  }, [slug]);
+
+  useEffect(() => {
+    const loadSlots = async () => {
+      if (!form.serviceId || !form.date) return;
+      setSelectedSlot(null);
+
+      try {
+        const { data } = await getPublicSlots(slug, {
+          serviceId: form.serviceId,
+          date: form.date,
+        });
+        setSlots(data.slots || []);
+      } catch (error) {
+        setSlots([]);
+        setMessage(error.response?.data?.message || "Could not load slots");
+      }
+    };
+
+    loadSlots();
+  }, [slug, form.serviceId, form.date]);
