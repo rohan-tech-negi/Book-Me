@@ -180,3 +180,34 @@ export default function PublicBookingPage() {
 
     loadSlots();
   }, [slug, form.serviceId, form.date]);
+  const handleChange = async (event) => {
+    const { name, value } = event.target;
+    if (name === "emailOtp") {
+      const digitsOnly = value.replace(/\D/g, "").slice(0, 6);
+      setForm((prev) => ({ ...prev, emailOtp: digitsOnly }));
+      if (otpVerified) setOtpVerified(false);
+
+      if (digitsOnly.length === 6 && form.customerEmail) {
+        try {
+          await verifyPublicBookingOtp(slug, {
+            customerEmail: form.customerEmail,
+            emailOtp: digitsOnly,
+          });
+          setOtpVerified(true);
+          setMessage("Email verified successfully.");
+        } catch (error) {
+          setOtpVerified(false);
+          setMessage(error.response?.data?.message || "Invalid OTP");
+        }
+      }
+      return;
+    }
+    if (name === "customerEmail") {
+      setOtpVerified(false);
+      setOtpSentTo("");
+    }
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
