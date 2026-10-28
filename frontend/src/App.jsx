@@ -10,6 +10,9 @@ import BookingCancelledPage from "./pages/BookingCancelledPage"
 import AvailabilityPage from "./pages/AvailabilityPage"
 import ServicePage from "./pages/ServicesPage"
 import PaymentPage from "./pages/PaymentPage"
+import PublicBookingPage from "./pages/PublicBookingsPage"
+import TermsOfServicePage from "./pages/TermsOfServicesPage"
+import 
 
 
 const ProtectedRoute  = ({children}) => {

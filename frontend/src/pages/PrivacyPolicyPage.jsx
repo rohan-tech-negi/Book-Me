@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
-import { ArrowLeft, FileText } from "lucide-react";
+import { ArrowLeft, Shield } from "lucide-react";
 import logo from "../assets/logo.png";
 
-export default function TermsOfServicePage() {
+export default function PrivacyPolicyPage() {
   return (
     <div className="min-h-screen bg-[#f8f9fc] text-slate-900">
       {/* Header */}
@@ -26,11 +26,11 @@ export default function TermsOfServicePage() {
       <main className="mx-auto max-w-4xl px-6 py-12 md:py-16">
         <div className="flex items-center gap-4 mb-8">
           <div className="w-14 h-14 rounded-2xl bg-[#F4F0FF] flex items-center justify-center">
-            <FileText className="w-7 h-7 text-[#7D57F5]" />
+            <Shield className="w-7 h-7 text-[#7D57F5]" />
           </div>
           <div>
             <h1 className="text-[32px] md:text-[40px] font-extrabold tracking-tight text-slate-900 leading-tight">
-              Terms of Service
+              Privacy Policy
             </h1>
             <p className="text-sm font-medium text-slate-500 mt-1">Last updated: May 26, 2026</p>
           </div>
@@ -38,147 +38,125 @@ export default function TermsOfServicePage() {
 
         <div className="bg-white rounded-[24px] border border-slate-200 p-8 md:p-12 shadow-sm space-y-8">
           <section>
-            <h2 className="text-xl font-extrabold text-slate-900 mb-3">1. Acceptance of Terms</h2>
+            <h2 className="text-xl font-extrabold text-slate-900 mb-3">1. Introduction</h2>
             <p className="text-[15px] text-slate-600 leading-relaxed">
-              By accessing or using BookMe (the "Service"), you agree to be bound by these Terms of
-              Service ("Terms"). If you do not agree to these Terms, you may not access or use the
-              Service. These Terms apply to all visitors, users, and others who access or use the
-              Service.
+              Welcome to BookMe ("we," "our," or "us"). We are committed to protecting your personal
+              information and your right to privacy. This Privacy Policy explains how we collect, use,
+              disclose, and safeguard your information when you use our web application and related
+              services (collectively, the "Service").
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-extrabold text-slate-900 mb-3">2. Description of Service</h2>
-            <p className="text-[15px] text-slate-600 leading-relaxed">
-              BookMe is an online appointment scheduling and booking management platform. The Service
-              allows business owners ("Providers") to create booking pages, manage services and
-              availability, accept payments, and communicate with their customers ("Clients"). Clients
-              can discover available appointment slots, book services, and receive confirmations.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-extrabold text-slate-900 mb-3">3. User Accounts</h2>
-            <ul className="list-disc list-inside space-y-2 text-[15px] text-slate-600 leading-relaxed ml-2">
-              <li>You must provide accurate and complete information when creating an account.</li>
-              <li>You are responsible for safeguarding your account credentials and for all activities under your account.</li>
-              <li>You must notify us immediately upon becoming aware of any breach of security or unauthorized use of your account.</li>
-              <li>We reserve the right to suspend or terminate accounts that violate these Terms.</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-extrabold text-slate-900 mb-3">4. Booking & Payments</h2>
+            <h2 className="text-xl font-extrabold text-slate-900 mb-3">2. Information We Collect</h2>
             <p className="text-[15px] text-slate-600 leading-relaxed mb-3">
-              By using the booking and payment features, you agree to the following:
+              We collect information that you provide directly to us, including:
             </p>
             <ul className="list-disc list-inside space-y-2 text-[15px] text-slate-600 leading-relaxed ml-2">
-              <li>All payments are processed securely through Stripe. BookMe does not directly handle or store credit card information.</li>
-              <li>Providers set their own service prices and are responsible for the accuracy of those prices.</li>
-              <li>A platform fee may be deducted from each transaction as outlined in the Provider's dashboard.</li>
-              <li>Refund policies are managed by individual Providers. BookMe facilitates the payment process but is not responsible for disputes between Providers and Clients.</li>
-              <li>Booking cancellations and rescheduling are subject to the Provider's policies.</li>
+              <li><span className="font-semibold text-slate-700">Account Information:</span> Name, email address, business name, and profile details when you create an account.</li>
+              <li><span className="font-semibold text-slate-700">Booking Information:</span> Customer names, email addresses, appointment dates and times, and service selections.</li>
+              <li><span className="font-semibold text-slate-700">Payment Information:</span> Payment details are processed securely by our third-party payment processor (Stripe). We do not store your full payment card information on our servers.</li>
+              <li><span className="font-semibold text-slate-700">Calendar Data:</span> When you connect Google Calendar, we access calendar event data to sync your bookings and avoid scheduling conflicts.</li>
+              <li><span className="font-semibold text-slate-700">Communication Data:</span> Email addresses used for OTP verification and booking notifications.</li>
             </ul>
           </section>
 
           <section>
-            <h2 className="text-xl font-extrabold text-slate-900 mb-3">5. Third-Party Integrations</h2>
+            <h2 className="text-xl font-extrabold text-slate-900 mb-3">3. How We Use Your Information</h2>
+            <ul className="list-disc list-inside space-y-2 text-[15px] text-slate-600 leading-relaxed ml-2">
+              <li>To provide, operate, and maintain the Service</li>
+              <li>To process bookings, payments, and send appointment confirmations</li>
+              <li>To send OTP verification codes for secure booking authentication</li>
+              <li>To sync booking events with your connected Google Calendar</li>
+              <li>To send booking-related email notifications to customers and service providers</li>
+              <li>To improve and personalize the Service experience</li>
+              <li>To detect and prevent fraudulent or unauthorized activities</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-extrabold text-slate-900 mb-3">4. Third-Party Services</h2>
             <p className="text-[15px] text-slate-600 leading-relaxed mb-3">
-              The Service integrates with third-party platforms to enhance functionality:
+              We integrate with the following third-party services:
             </p>
             <ul className="list-disc list-inside space-y-2 text-[15px] text-slate-600 leading-relaxed ml-2">
-              <li><span className="font-semibold text-slate-700">Google Calendar:</span> Optionally connect your Google Calendar to automatically sync booking events. You may disconnect at any time from your Profile settings.</li>
-              <li><span className="font-semibold text-slate-700">Gmail:</span> Used to send booking confirmations, cancellation notices, and OTP verification emails to customers.</li>
-              <li><span className="font-semibold text-slate-700">Stripe:</span> Required for processing payments. By using payment features, you also agree to Stripe's Terms of Service.</li>
+              <li><span className="font-semibold text-slate-700">Stripe:</span> For processing payments securely. Stripe's privacy policy governs payment data handling.</li>
+              <li><span className="font-semibold text-slate-700">Google Calendar API:</span> For syncing booking events. We request only the minimum permissions needed (calendar event creation and management).</li>
+              <li><span className="font-semibold text-slate-700">Gmail API:</span> For sending booking notifications and OTP verification emails through your connected Gmail account.</li>
             </ul>
-            <p className="text-[15px] text-slate-600 leading-relaxed mt-3">
-              We are not responsible for the availability, reliability, or policies of any third-party services.
+          </section>
+
+          <section>
+            <h2 className="text-xl font-extrabold text-slate-900 mb-3">5. Google API Services — Limited Use Disclosure</h2>
+            <p className="text-[15px] text-slate-600 leading-relaxed">
+              BookMe's use and transfer of information received from Google APIs adheres to the{" "}
+              <a
+                href="https://developers.google.com/terms/api-services-user-data-policy"
+                target="_blank"
+                rel="noreferrer"
+                className="text-[#7D57F5] font-semibold hover:underline"
+              >
+                Google API Services User Data Policy
+              </a>
+              , including the Limited Use requirements. We only use Google data to provide and improve
+              the calendar synchronization and email notification features.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-extrabold text-slate-900 mb-3">6. Acceptable Use</h2>
+            <h2 className="text-xl font-extrabold text-slate-900 mb-3">6. Data Security</h2>
+            <p className="text-[15px] text-slate-600 leading-relaxed">
+              We implement appropriate technical and organizational security measures to protect your
+              personal data, including encryption of data in transit (HTTPS/TLS), secure token-based
+              authentication, and limited access controls. However, no method of electronic
+              transmission or storage is 100% secure, and we cannot guarantee absolute security.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-extrabold text-slate-900 mb-3">7. Data Retention</h2>
+            <p className="text-[15px] text-slate-600 leading-relaxed">
+              We retain your personal information for as long as your account is active or as needed to
+              provide you with the Service. Booking records are retained for business record-keeping
+              purposes. You may request deletion of your account and associated data by contacting us.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-extrabold text-slate-900 mb-3">8. Your Rights</h2>
             <p className="text-[15px] text-slate-600 leading-relaxed mb-3">
-              You agree not to use the Service to:
+              Depending on your location, you may have the following rights:
             </p>
             <ul className="list-disc list-inside space-y-2 text-[15px] text-slate-600 leading-relaxed ml-2">
-              <li>Violate any applicable laws, rules, or regulations</li>
-              <li>Infringe upon the intellectual property rights of others</li>
-              <li>Upload or transmit viruses, malware, or other harmful code</li>
-              <li>Engage in any conduct that restricts or inhibits any other user from using the Service</li>
-              <li>Use the Service for any fraudulent, deceptive, or misleading purposes</li>
-              <li>Attempt to gain unauthorized access to other users' accounts or data</li>
+              <li>Access and receive a copy of your personal data</li>
+              <li>Request correction of inaccurate personal data</li>
+              <li>Request deletion of your personal data</li>
+              <li>Withdraw consent for data processing at any time</li>
+              <li>Disconnect third-party integrations (Google Calendar, Stripe) from your profile settings</li>
             </ul>
           </section>
 
           <section>
-            <h2 className="text-xl font-extrabold text-slate-900 mb-3">7. Intellectual Property</h2>
+            <h2 className="text-xl font-extrabold text-slate-900 mb-3">9. Cookies</h2>
             <p className="text-[15px] text-slate-600 leading-relaxed">
-              The Service and its original content (excluding content provided by users), features, and
-              functionality are and will remain the exclusive property of BookMe and Hexagon Digital
-              Services. The Service is protected by copyright, trademark, and other applicable laws.
-              You are granted a limited, non-exclusive, non-transferable license to use the Service for
-              its intended purpose.
+              We use essential cookies and local storage tokens to maintain your authentication session.
+              We do not use tracking cookies or third-party advertising cookies.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-extrabold text-slate-900 mb-3">8. Limitation of Liability</h2>
+            <h2 className="text-xl font-extrabold text-slate-900 mb-3">10. Changes to This Policy</h2>
             <p className="text-[15px] text-slate-600 leading-relaxed">
-              To the maximum extent permitted by applicable law, BookMe and its affiliates, officers,
-              directors, employees, and agents shall not be liable for any indirect, incidental,
-              special, consequential, or punitive damages, including but not limited to loss of profits,
-              data, use, or other intangible losses, resulting from your access to or use of (or
-              inability to access or use) the Service, even if we have been advised of the possibility
-              of such damages.
+              We may update this Privacy Policy from time to time. We will notify you of any changes by
+              updating the "Last updated" date at the top of this page. We encourage you to review this
+              Privacy Policy periodically for any changes.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-extrabold text-slate-900 mb-3">9. Disclaimer of Warranties</h2>
+            <h2 className="text-xl font-extrabold text-slate-900 mb-3">11. Contact Us</h2>
             <p className="text-[15px] text-slate-600 leading-relaxed">
-              The Service is provided on an "AS IS" and "AS AVAILABLE" basis without warranties of any
-              kind, whether express or implied, including but not limited to implied warranties of
-              merchantability, fitness for a particular purpose, non-infringement, or course of
-              performance. We do not warrant that the Service will function uninterrupted, secure, or
-              error-free.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-extrabold text-slate-900 mb-3">10. Termination</h2>
-            <p className="text-[15px] text-slate-600 leading-relaxed">
-              We may terminate or suspend your account and bar access to the Service immediately,
-              without prior notice or liability, for any reason whatsoever, including without limitation
-              if you breach these Terms. Upon termination, your right to use the Service will cease
-              immediately. You may also terminate your account at any time by contacting us.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-extrabold text-slate-900 mb-3">11. Changes to Terms</h2>
-            <p className="text-[15px] text-slate-600 leading-relaxed">
-              We reserve the right to modify or replace these Terms at any time at our sole discretion.
-              If a revision is material, we will provide at least 30 days' notice prior to any new terms
-              taking effect. What constitutes a material change will be determined at our sole discretion.
-              By continuing to access or use the Service after those revisions become effective, you
-              agree to be bound by the revised terms.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-extrabold text-slate-900 mb-3">12. Governing Law</h2>
-            <p className="text-[15px] text-slate-600 leading-relaxed">
-              These Terms shall be governed and construed in accordance with the laws of India, without
-              regard to its conflict of law provisions. Any disputes arising from these Terms or the
-              Service shall be subject to the exclusive jurisdiction of the courts in India.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-extrabold text-slate-900 mb-3">13. Contact Us</h2>
-            <p className="text-[15px] text-slate-600 leading-relaxed">
-              If you have questions about these Terms, please contact us at:{" "}
+              If you have questions or concerns about this Privacy Policy, please contact us at:{" "}
               <a
                 href="mailto:support@hexagondigitalservices.com"
                 className="text-[#7D57F5] font-semibold hover:underline"
