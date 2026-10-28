@@ -2,5 +2,6 @@ import client from "./client";
 
 export const getPaymentOverview = () => client.get('/payments');
 export const getPayementOverview = getPaymentOverview;
-export const updatePayoutDetails = (data) => client.get('/payments/payout-details', data)
-export const requestWithdrawl = (amount) => client.post('/payments/withdrawls', {amount})
+export const updatePayoutDetails = (data) => client.put('/payments/payout-details', data);
+export const requestWithdrawal = (amount) => client.post('/payments/withdrawals', { amount });
+export const requestWithdrawl = requestWithdrawal;

@@ -9,6 +9,7 @@ import BookingSuccessPage from "./pages/BookingSuccessPage"
 import BookingCancelledPage from "./pages/BookingCancelledPage"
 import AvailabilityPage from "./pages/AvailabilityPage"
 import ServicePage from "./pages/ServicesPage"
+import PaymentPage from "./pages/PaymentPage"
 
 
 const ProtectedRoute  = ({children}) => {
@@ -49,6 +50,7 @@ const App = () => {
     <Routes>
       <Route path="/" element={<ProtectedRoute><DashboardPage></DashboardPage></ProtectedRoute>}></Route>
       <Route path="/bookings" element={<ProtectedRoute><BookingsPage></BookingsPage></ProtectedRoute>}></Route>
+      <Route path="/payments" element={<ProtectedRoute><PaymentPage></PaymentPage></ProtectedRoute>}></Route>
       <Route path="/booking/success" element={<BookingSuccessPage></BookingSuccessPage>}></Route>
       <Route path="/availability" element={<ProtectedRoute><AvailabilityPage></AvailabilityPage></ProtectedRoute>}></Route>
       <Route path="/services" element={<ProtectedRoute><ServicePage></ServicePage></ProtectedRoute>}></Route>

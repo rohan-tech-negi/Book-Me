@@ -1,127 +1,163 @@
 import { useEffect, useMemo, useState } from "react";
-import p6Image from "../assets/p6.png"
+import p3Image from "../assets/P3.png";
 import { Link } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
-import {getPayementOverview, requestWithdrawl, updatePayoutDetails} from "../api/payment"
+import {
+  getPaymentOverview,
+  requestWithdrawal,
+  updatePayoutDetails,
+} from "../api/payment";
 import { paymentsPageStyles as s } from "../assests/dummy";
+import {
+  ArrowDownLeft,
+  ArrowDownToLine,
+  ArrowUpRight,
+  Building2,
+  Clock,
+  CreditCard,
+  ExternalLink,
+  IndianRupee,
+  Save,
+  TrendingUp,
+  Wallet,
+} from "lucide-react";
 
+const formatMoney = (amount = 0, currency = "INR") =>
+  new Intl.NumberFormat("en-IN", { style: "currency", currency }).format(
+    amount / 100
+  );
 
-const formatmoney = (amount = 0, currency = "INR") => 
-    new Intl.NumberFormat("en-IN", {style: "currency", currency}).format(
-        amount/ 100
-    )
 const transactionLabel = (transaction) => {
-    if(transaction.type === "booking_payout"){
-        if(transaction.description && transaction.description.includes ("Booking payment")){
-             return "Booking payment recieved"
-        }
-           return transaction.description || 'Booking payout '
+  if (transaction.type === "booking_payout") {
+    if (
+      transaction.description &&
+      transaction.description.includes("Booking payment")
+    ) {
+      return "Booking payment received";
     }
-    if(transaction.type === "withdrawl_hold")  return "Withdrawl requested"
-    if(transaction.type === "withdrawl_reversal") return "Withdrawl returned"
-    if(transaction.description && transaction.description.includes("Booking payout for stripe session")) {
-        return "Booking payment received"
-    }
-    return transaction.description || transaction.type
-}
+    return transaction.description || "Booking payout";
+  }
+  if (
+    transaction.type === "withdrawal_hold" ||
+    transaction.type === "withdrawl_hold"
+  ) {
+    return "Withdrawal requested";
+  }
+  if (
+    transaction.type === "withdrawal_reversal" ||
+    transaction.type === "withdrawl_reversal"
+  ) {
+    return "Withdrawal returned";
+  }
+  if (
+    transaction.description &&
+    transaction.description.includes("Booking payout for stripe session")
+  ) {
+    return "Booking payment received";
+  }
+  return transaction.description || transaction.type;
+};
 
 const transactionAmount = (transaction) => {
-    if(transaction.type === "withdrawl_hold")
-        return -Math.abs(transaction.amount || 0)
-    return transaction.amount || 0
-}
+  if (
+    transaction.type === "withdrawal_hold" ||
+    transaction.type === "withdrawl_hold"
+  ) {
+    return -Math.abs(transaction.amount || 0);
+  }
+  return transaction.amount || 0;
+};
 
 export default function PaymentPage() {
-    const [overview , setOverview] = useState(null)
-    const [message, setMessage] = useState("")
-    const [loading, setLoading] = useState(false)
-    const [withdrawAmount, setWithdrawAmount] = useState("")
-    const [form, setForm] = useState({
-        accountHolderName: "",
-        bankName: "",
-        accountNumber: "",
-        ifsc: "",
-        upiId: ""
-    })
+  const [overview, setOverview] = useState(null);
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState("");
+  const [form, setForm] = useState({
+    accountHolderName: "",
+    bankName: "",
+    accountNumber: "",
+    ifsc: "",
+    upiId: "",
+  });
 
-    const wallet = overview?.wallet || {};
-    const payoutDetails = overview?.payoutDetails || {};
-    const availableRupees = useMemo(
-        () => ((wallet.available || 0)/ 100).toFixed(2),
-        [wallet.available]
-    )
-    const loadOverview = async() =>{
-        if(!localStorage.getItem("token")){
-            setMessage("Please log in to manage payment details")
-            return 
-        }
+  const wallet = overview?.wallet || {};
+  const payoutDetails = overview?.payoutDetails || {};
+  const availableRupees = useMemo(
+    () => ((wallet.available || 0) / 100).toFixed(2),
+    [wallet.available]
+  );
+
+  const loadOverview = async () => {
+    if (!localStorage.getItem("token")) {
+      setMessage("Please log in to manage payment details");
+      return;
     }
 
-    const {data} = await getPayementOverview();
+    const { data } = await getPaymentOverview();
     setOverview(data);
-    setForm((prev)=> ({
-        ...prev, 
-        accountHolderName: data.payoutDetails.accountHolderName || "",
-        bankName: data.payoutDetails?.bankName || "",
-        ifsc: data.payoutDetails?.ifsc || "",
-        upiId: data.payoutDetails?.upiId || ""
-    }))
+    setForm((prev) => ({
+      ...prev,
+      accountHolderName: data.payoutDetails?.accountHolderName || "",
+      bankName: data.payoutDetails?.bankName || "",
+      ifsc: data.payoutDetails?.ifsc || "",
+      upiId: data.payoutDetails?.upiId || "",
+    }));
+  };
 
-    useEffect(() => {
-        loadOverview().catch((error) => {
-            setMessage(
-                error.response?.data?.message || "Could not load payment details"
-            )
-        })
-    }, [])
-    const handleChange = (event) => {
-        setForm((prev) => ({...prev, [event.target.name]: event.target.value}))
-    }
+  useEffect(() => {
+    loadOverview().catch((error) => {
+      setMessage(
+        error.response?.data?.message || "Could not load payment details"
+      );
+    });
+  }, []);
 
-    const savePayoutDetails = async(event) => {
-        event.preventDefault()
-        setLoading(true)
-        setMessage("")
-    }
+  const handleChange = (event) => {
+    setForm((prev) => ({ ...prev, [event.target.name]: event.target.value }));
+  };
+
+  const savePayoutDetails = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    setMessage("");
 
     try {
-        const {data} = await updatePayoutDetails(form)
-        setOverview((prev) => ({...prev, payoutDetails: data.payoutDetails}))
-        setForm((prev) => ({...prev, accountNumber: ""}))
-        setMessage(data.message)
+      const { data } = await updatePayoutDetails(form);
+      setOverview((prev) => ({ ...prev, payoutDetails: data.payoutDetails }));
+      setForm((prev) => ({ ...prev, accountNumber: "" }));
+      setMessage(data.message || "Payout details saved successfully");
     } catch (error) {
-        setMessage(
-            error.response?.data?.message || " could not save payout details"
-        )
-        finally{
-            setLoading(false)
-        }
+      setMessage(
+        error.response?.data?.message || "Could not save payout details"
+      );
+    } finally {
+      setLoading(false);
     }
+  };
 
-    const submitWithdrawl = async(event) => {
-        event.preventDefault()
-        setLoading(true)
-        setMessage("")
-        try {
-            const amount = Math.round(Number(withdrawAmount) * 100)
-            const {data} = await requestWithdrawl(amount)
-            setMessage(data.message)
-            setWithdrawAmount("")
-            await loadOverview()
-        } catch (error) {
-            setMessage(
-                error.response?.data?.message || "Could not request withdrawl"
-            )
-        }finally {
-            setLoading(false)
-        }
+  const submitWithdrawal = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    setMessage("");
+    try {
+      const amount = Math.round(Number(withdrawAmount) * 100);
+      const { data } = await requestWithdrawal(amount);
+      setMessage(data.message);
+      setWithdrawAmount("");
+      await loadOverview();
+    } catch (error) {
+      setMessage(
+        error.response?.data?.message || "Could not request withdrawal"
+      );
+    } finally {
+      setLoading(false);
     }
+  };
 
-    return (
-        <AppLayout>
-            <section className={s.mainGrid}>
-                
-
+  return (
+    <AppLayout>
+      <section className={s.mainGrid}>
         {/* LEFT */}
         <div className={s.leftColumn}>
           <div className={s.leftTopArea}>
@@ -348,11 +384,7 @@ export default function PaymentPage() {
             </div>
           </section>
         </div>
- 
-            </section>
-        </AppLayout>
-    )
+      </section>
+    </AppLayout>
+  );
 }
-
-
-
