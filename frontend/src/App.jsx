@@ -12,7 +12,7 @@ import ServicePage from "./pages/ServicesPage"
 import PaymentPage from "./pages/PaymentPage"
 import PublicBookingPage from "./pages/PublicBookingsPage"
 import TermsOfServicePage from "./pages/TermsOfServicesPage"
-import 
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 
 
 const ProtectedRoute  = ({children}) => {
@@ -54,11 +54,15 @@ const App = () => {
       <Route path="/" element={<ProtectedRoute><DashboardPage></DashboardPage></ProtectedRoute>}></Route>
       <Route path="/bookings" element={<ProtectedRoute><BookingsPage></BookingsPage></ProtectedRoute>}></Route>
       <Route path="/payments" element={<ProtectedRoute><PaymentPage></PaymentPage></ProtectedRoute>}></Route>
+      <Route path="/book/:slug" element={<PublicBookingPage></PublicBookingPage>}></Route>
+      <Route path="/public/:slug" element={<PublicBookingPage></PublicBookingPage>}></Route>
       <Route path="/booking/success" element={<BookingSuccessPage></BookingSuccessPage>}></Route>
       <Route path="/availability" element={<ProtectedRoute><AvailabilityPage></AvailabilityPage></ProtectedRoute>}></Route>
       <Route path="/services" element={<ProtectedRoute><ServicePage></ServicePage></ProtectedRoute>}></Route>
       <Route path="/booking/cancelled" element={<BookingCancelledPage></BookingCancelledPage>}></Route>
       <Route path="/profile" element={<ProtectedRoute><ProfilePage></ProfilePage></ProtectedRoute>}></Route>
+      <Route path="/privacy" element={<PrivacyPolicyPage></PrivacyPolicyPage>}></Route>
+      <Route path="/terms" element={<TermsOfServicePage></TermsOfServicePage>}></Route>
       <Route path="/login" element={<PublicOnlyRoute><AuthPage></AuthPage></PublicOnlyRoute>}></Route>
       <Route path="/admin/login" element={<AdminLoginPage />} />
       <Route
