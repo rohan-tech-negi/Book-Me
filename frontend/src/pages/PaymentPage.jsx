@@ -106,7 +106,8 @@ export default function PaymentPage() {
             const amount = Math.round(Number(withdrawAmount) * 100)
             const {data} = await requestWithdrawl(amount)
             setMessage(data.message)
-            
+            setWithdrawAmount("")
+            await loadOverview()
         } catch (error) {
             
         }
